@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - AutoReminder{% endblock %}
+
+{% block content %}
+
+<div class="bg-gray-800 shadow-md rounded-lg p-6 text-white">
+    <h2 class="text-2xl font-bold mb-4">Task List</h2>
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-600">
+            <thead class="bg-gray-700">
+                <tr>
+                    <th class="px-4 py-2 text-left text-sm font-semibold text-gray-300">No.</th>
+                    <th class="px-4 py-2 text-left text-sm font-semibold text-gray-300">Task</th>
+                    <th class="px-4 py-2 text-left text-sm font-semibold text-gray-300">PIC</th>
+                    <th class="px-4 py-2 text-left text-sm font-semibold text-gray-300">Docs</th>
+                    <th class="px-4 py-2 text-left text-sm font-semibold text-gray-300">Remarks</th>
+                    <th class="px-4 py-2 text-left text-sm font-semibold text-gray-300">Due Date</th>
+                    <th class="px-4 py-2 text-left text-sm font-semibold text-gray-300">Priority</th>
+                    <th class="px-4 py-2 text-left text-sm font-semibold text-gray-300">Status</th>
+                    <th class="px-4 py-2 text-left text-sm font-semibold text-gray-300">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-gray-800 divide-y divide-gray-700 text-sm">
+                <!-- Dummy row 1 -->
+                <tr>
+                    <td class="px-4 py-2">1</td>
+                    <td class="px-4 py-2">Finalize Proposal</td>
+                    <td class="px-4 py-2">Amir</td>
+                    <td class="px-4 py-2">
+                        <a href="#" class="text-blue-400 hover:underline">proposal.pdf</a>
+                    </td>
+                    <td class="px-4 py-2">Pending approval</td>
+                    <td class="px-4 py-2">2025-08-05</td>
+                    <td class="px-4 py-2">
+                        <span class="px-2 py-1 bg-yellow-600 text-yellow-100 rounded-full">High</span>
+                    </td>
+                    <td class="px-4 py-2">
+                        <span class="px-2 py-1 bg-blue-600 text-blue-100 rounded-full">In Progress</span>
+                    </td>
+                    <td class="px-4 py-2">
+                        <div class="flex gap-2">
+                            <button class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs">Edit</button>
+                            <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Dummy row 2 -->
+                <tr>
+                    <td class="px-4 py-2">2</td>
+                    <td class="px-4 py-2">Design Wireframe</td>
+                    <td class="px-4 py-2">Aqid</td>
+                    <td class="px-4 py-2">
+                        <a href="#" class="text-blue-400 hover:underline">wireframe.png</a>
+                    </td>
+                    <td class="px-4 py-2">Waiting feedback</td>
+                    <td class="px-4 py-2">2025-08-10</td>
+                    <td class="px-4 py-2">
+                        <span class="px-2 py-1 bg-green-700 text-green-100 rounded-full">Medium</span>
+                    </td>
+                    <td class="px-4 py-2">
+                        <span class="px-2 py-1 bg-gray-600 text-gray-100 rounded-full">Pending</span>
+                    </td>
+                    <td class="px-4 py-2">
+                        <div class="flex gap-2">
+                            <button class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs">Edit</button>
+                            <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

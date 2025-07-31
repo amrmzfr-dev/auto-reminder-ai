@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AutoReminder{% endblock %}</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+        }
+        /* Custom active link style */
+        .sidebar-link.active {
+            background-color: #4f46e5; /* Indigo-600 */
+            color: #ffffff;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-900 flex">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-gray-800 text-white shadow-lg p-6 flex flex-col min-h-screen">
+        <div class="mb-8">
+            <h1 class="text-3xl font-extrabold text-indigo-400">C-Zero</h1>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="flex-grow space-y-2 text-sm">
+            <a class="sidebar-link flex items-center p-3 rounded-lg hover:bg-gray-700 transition-colors duration-200 {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
+                <i class="fas fa-chart-pie w-5 h-5 mr-3"></i> Dashboard
+            </a>
+            <a class="sidebar-link flex items-center p-3 rounded-lg hover:bg-gray-700 transition-colors duration-200 text-gray-300" href="#">
+                <i class="fas fa-icons w-5 h-5 mr-3"></i> Icons
+            </a>
+            <a class="sidebar-link flex items-center p-3 rounded-lg hover:bg-gray-700 transition-colors duration-200 text-gray-300" href="#">
+                <i class="fas fa-map-marker-alt w-5 h-5 mr-3"></i> Maps
+            </a>
+            <a class="sidebar-link flex items-center p-3 rounded-lg hover:bg-gray-700 transition-colors duration-200 text-gray-300" href="#">
+                <i class="fas fa-user w-5 h-5 mr-3"></i> User profile
+            </a>
+            <a class="sidebar-link flex items-center p-3 rounded-lg hover:bg-gray-700 transition-colors duration-200 text-gray-300" href="#">
+                <i class="fas fa-table w-5 h-5 mr-3"></i> Tables
+            </a>
+        </nav>
+
+        <div class="mt-8 pt-4 border-t border-gray-700">
+            <h3 class="text-xs font-semibold uppercase text-gray-500 mb-3">Links</h3>
+            <a class="sidebar-link flex items-center p-3 rounded-lg hover:bg-gray-700 transition-colors duration-200 text-gray-300" href="#">
+                <i class="fas fa-code w-5 h-5 mr-3"></i> Source Code
+            </a>
+            <a class="sidebar-link flex items-center p-3 rounded-lg hover:bg-gray-700 transition-colors duration-200 text-gray-300" href="#">
+                <i class="fas fa-external-link-alt w-5 h-5 mr-3"></i> More Django Apps
+            </a>
+            <a class="sidebar-link flex items-center p-3 rounded-lg hover:bg-red-700 transition-colors duration-200 mt-4" href="{% url 'logout' %}">
+                <i class="fas fa-sign-out-alt w-5 h-5 mr-3"></i> Logout
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 bg-gray-900 p-8">
+        <!-- Top Navigation Bar -->
+        <header class="bg-gray-800 h-16 rounded-lg shadow-md flex items-center justify-between px-6 mb-8">
+            <div class="text-white text-lg font-semibold">DASHBOARD</div>
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <input type="text" placeholder="Search" class="p-2 pl-10 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm">
+                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Gradient Section for Cards and Charts -->
+        <div class="bg-gray-800 rounded-xl shadow-lg p-6 mb-8 min-h-[100px]">
+        <!-- Info Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Card 1: Traffic -->
+            <div class="bg-gray-700 p-6 rounded-lg shadow-md flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-bold text-gray-300 mb-1">Traffic</h3>
+                    <p class="text-3xl font-extrabold text-white">350,897</p>
+                    <p class="text-sm text-gray-400">
+                        <span class="text-green-400 mr-1"><i class="fas fa-arrow-up"></i> 3.48%</span> Since last month
+                    </p>
+                </div>
+                <div class="bg-red-600 p-3 rounded-full text-white">
+                    <i class="fas fa-chart-bar text-xl"></i>
+                </div>
+            </div>
+
+            <!-- Card 2: New Users -->
+            <div class="bg-gray-700 p-6 rounded-lg shadow-md flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-bold text-gray-300 mb-1">New Users</h3>
+                    <p class="text-3xl font-extrabold text-white">2,356</p>
+                    <p class="text-sm text-gray-400">
+                        <span class="text-red-400 mr-1"><i class="fas fa-arrow-down"></i> 3.48%</span> Since last week
+                    </p>
+                </div>
+                <div class="bg-orange-500 p-3 rounded-full text-white">
+                    <i class="fas fa-globe text-xl"></i>
+                </div>
+            </div>
+
+            <!-- Card 3: Sales -->
+            <div class="bg-gray-700 p-6 rounded-lg shadow-md flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-bold text-gray-300 mb-1">Sales</h3>
+                    <p class="text-3xl font-extrabold text-white">924</p>
+                    <p class="text-sm text-gray-400">
+                        <span class="text-red-400 mr-1"><i class="fas fa-arrow-down"></i> 1.10%</span> Since yesterday
+                    </p>
+                </div>
+                <div class="bg-yellow-500 p-3 rounded-full text-white">
+                    <i class="fas fa-dollar-sign text-xl"></i>
+                </div>
+            </div>
+
+            <!-- Card 4: Performance -->
+            <div class="bg-gray-700 p-6 rounded-lg shadow-md flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-bold text-gray-300 mb-1">Performance</h3>
+                    <p class="text-3xl font-extrabold text-white">49.65%</p>
+                    <p class="text-sm text-gray-400">
+                        <span class="text-green-400 mr-1"><i class="fas fa-arrow-up"></i> 12%</span> Since last month
+                    </p>
+                </div>
+                <div class="bg-blue-500 p-3 rounded-full text-white">
+                    <i class="fas fa-percent text-xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        {% block content %}
+        <!-- Page-specific content will be inserted here by extending templates -->
+        {% endblock %}
+    </main>
+</body>
+</html>
