@@ -3,6 +3,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Task
+from .forms import TaskForm
 
 # 🔐 Login View
 def login_view(request):
@@ -50,8 +53,36 @@ def logout_view(request):
     logout(request)
     return redirect('login')
 
-@login_required(login_url='login')  # 🔐 force login if not authenticated
+@login_required
 def dashboard_view(request):
-    return render(request, 'accounts/dashboard.html', {
-        'user': request.user  # send user data to the template
-    })
+    tasks = Task.objects.all().order_by('due_date')
+    return render(request, 'accounts/dashboard.html', {'tasks': tasks})
+
+
+def edit_task(request, pk):
+    task = get_object_or_404(Task, pk=pk)
+    if request.method == 'POST':
+        form = TaskForm(request.POST, request.FILES, instance=task)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard')
+    else:
+        form = TaskForm(instance=task)
+    return render(request, 'accounts/task_form.html', {'form': form, 'action': 'Edit'})
+
+@login_required
+def add_task(request):
+    if request.method == 'POST':
+        form = TaskForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard')
+    else:
+        form = TaskForm()
+    return render(request, 'accounts/task_form.html', {'form': form, 'action': 'Add'})
+
+@login_required
+def delete_task(request, pk):
+    task = get_object_or_404(Task, pk=pk)
+    task.delete()
+    return redirect('dashboard')

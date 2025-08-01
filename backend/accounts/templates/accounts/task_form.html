@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}{{ action }} Task{% endblock %}
+
+{% block content %}
+<div class="bg-gray-800 text-white p-6 rounded-lg max-w-xl mx-auto">
+    <h2 class="text-xl font-semibold mb-4">{{ action }} Task</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Submit</button>
+        <a href="{% url 'dashboard' %}" class="ml-4 text-gray-300 underline">Cancel</a>
+    </form>
+</div>
+{% endblock %}
