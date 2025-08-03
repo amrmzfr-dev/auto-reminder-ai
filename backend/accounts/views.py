@@ -56,19 +56,24 @@ def logout_view(request):
 @login_required
 def dashboard_view(request):
     tasks = Task.objects.all().order_by('due_date')
-    return render(request, 'accounts/dashboard.html', {'tasks': tasks})
 
+    total_tasks = tasks.count()
+    in_progress = tasks.filter(status="In Progress").count()
+    pending = tasks.filter(status="Pending").count()
+    completed = tasks.filter(status="Completed").count()
 
-def edit_task(request, pk):
-    task = get_object_or_404(Task, pk=pk)
-    if request.method == 'POST':
-        form = TaskForm(request.POST, request.FILES, instance=task)
-        if form.is_valid():
-            form.save()
-            return redirect('dashboard')
-    else:
-        form = TaskForm(instance=task)
-    return render(request, 'accounts/task_form.html', {'form': form, 'action': 'Edit'})
+    # Avoid division by zero
+    completion_rate = int((completed / total_tasks) * 100) if total_tasks > 0 else 0
+
+    context = {
+        'tasks': tasks,
+        'total_tasks': total_tasks,
+        'in_progress': in_progress,
+        'pending': pending,
+        'completion_rate': completion_rate,
+    }
+
+    return render(request, 'accounts/dashboard.html', context)
 
 @login_required
 def add_task(request):
@@ -86,3 +91,15 @@ def delete_task(request, pk):
     task = get_object_or_404(Task, pk=pk)
     task.delete()
     return redirect('dashboard')
+
+def edit_task(request, pk):
+    task = get_object_or_404(Task, pk=pk)
+    if request.method == 'POST':
+        form = TaskForm(request.POST, request.FILES, instance=task)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard')
+    else:
+        form = TaskForm(instance=task)
+    
+    return render(request, 'accounts/edit_task.html', {'form': form})

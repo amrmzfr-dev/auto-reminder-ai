@@ -5,18 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}AutoReminder{% endblock %}</title>
 
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <style>
         body {
             font-family: "Inter", sans-serif;
+            padding-left: 16rem;
         }
-        /* Custom active link style */
         .sidebar-link.active {
-            background-color: #4f46e5; /* Indigo-600 */
+            background-color: #4f46e5;
             color: #ffffff;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
@@ -24,13 +22,11 @@
 </head>
 <body class="bg-gray-100 text-gray-900 flex">
 
-    <!-- Sidebar -->
-    <aside class="w-64 bg-gray-800 text-white shadow-lg p-6 flex flex-col min-h-screen">
+    <aside class="w-64 bg-gray-800 text-white shadow-lg p-6 flex flex-col fixed top-0 left-0 h-screen">
         <div class="mb-8">
-            <h1 class="text-3xl font-extrabold text-indigo-400">C-Zero</h1>
+            <h1 class="text-3xl font-bold text-indigo-400">C-Zero</h1>
         </div>
 
-        <!-- Navigation -->
         <nav class="flex-grow space-y-2 text-sm">
             <a class="sidebar-link flex items-center p-3 rounded-lg hover:bg-gray-700 transition-colors duration-200 {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
                 <i class="fas fa-chart-pie w-5 h-5 mr-3"></i> Dashboard
@@ -63,11 +59,9 @@
         </div>
     </aside>
 
-    <!-- Main Content Area -->
     <main class="flex-1 bg-gray-900 p-8">
-        <!-- Top Navigation Bar -->
         <header class="bg-gray-800 h-16 rounded-lg shadow-md flex items-center justify-between px-6 mb-8">
-            <div class="text-white text-lg font-semibold">DASHBOARD</div>
+            <div class="text-white text-lg font-semibold">Dashboard</div>
             <div class="flex items-center space-x-4">
                 <div class="relative">
                     <input type="text" placeholder="Search" class="p-2 pl-10 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm">
@@ -76,70 +70,40 @@
             </div>
         </header>
 
-        <!-- Gradient Section for Cards and Charts -->
         <div class="bg-gray-800 rounded-xl shadow-lg p-6 mb-8 min-h-[100px]">
-        <!-- Info Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <!-- Card 1: Total Tasks -->
-            <div class="bg-gray-700 p-6 rounded-lg shadow-md flex items-center justify-between">
-                <div>
-                    <h3 class="text-lg font-bold text-gray-300 mb-1">Total Tasks</h3>
-                    <p class="text-3xl font-extrabold text-white mb-2">2</p>
-                    <p class="text-sm text-gray-400">
-                        <span class="text-green-400 mr-1"><i class="fas fa-arrow-up"></i> 100%</span> Since last month
-                    </p>
-                </div>
-                <div class="bg-purple-600 p-3 rounded-full text-white">
-                    <i class="fas fa-tasks text-xl"></i>
-                </div>
-            </div>
-
-            <!-- Card 2: In Progress -->
-            <div class="bg-gray-700 p-6 rounded-lg shadow-md flex items-center justify-between">
-                <div>
-                    <h3 class="text-lg font-bold text-gray-300 mb-1">In Progress</h3>
-                    <p class="text-3xl font-extrabold text-white mb-2">1</p>
-                    <p class="text-sm text-gray-400">
-                        <span class="text-yellow-400 mr-1"><i class="fas fa-spinner"></i> Active</span> Ongoing task execution
-                    </p>
-                </div>
-                <div class="bg-yellow-500 p-3 rounded-full text-white">
-                    <i class="fas fa-hourglass-half text-xl"></i>
-                </div>
-            </div>
-
-            <!-- Card 3: Pending Tasks -->
-            <div class="bg-gray-700 p-6 rounded-lg shadow-md flex items-center justify-between">
-                <div>
-                    <h3 class="text-lg font-bold text-gray-300 mb-1">Pending Tasks</h3>
-                    <p class="text-3xl font-extrabold text-white mb-2">1</p>
-                    <p class="text-sm text-gray-400">
-                        <span class="text-gray-300 mr-1"><i class="fas fa-pause-circle"></i></span> Awaiting action
-                    </p>
-                </div>
-                <div class="bg-gray-500 p-3 rounded-full text-white">
-                    <i class="fas fa-clock text-xl"></i>
-                </div>
-            </div>
-
-            <!-- Card 4: Completion Rate -->
-            <div class="bg-gray-700 p-6 rounded-lg shadow-md flex items-center justify-between">
-                <div>
-                    <h3 class="text-lg font-bold text-gray-300 mb-1">Completion Rate</h3>
-                    <p class="text-3xl font-extrabold text-white mb-2">0%</p>
-                    <p class="text-sm text-gray-400">
-                        <span class="text-red-400 mr-1"><i class="fas fa-arrow-down"></i> -100%</span> Since last update
-                    </p>
-                </div>
-                <div class="bg-red-500 p-3 rounded-full text-white">
-                    <i class="fas fa-times-circle text-xl"></i>
-                </div>
-            </div>
-        </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <!-- Total Tasks -->
+    <div class="bg-gray-700 p-6 rounded-xl shadow-sm">
+        <h3 class="text-sm text-white font-semibold mb-1">Total Tasks</h3>
+        <p class="text-3xl font-bold text-white">{{ total_tasks }}</p>
+        <p class="text-xs text-green-600 mt-1">+1% Since last month</p>
     </div>
 
+    <!-- In Progress -->
+    <div class="bg-gray-700 p-6 rounded-xl shadow-sm">
+        <h3 class="text-sm text-white font-semibold mb-1">In Progress</h3>
+        <p class="text-3xl font-bold text-white">{{ in_progress }}</p>
+        <p class="text-xs text-blue-600 mt-1">Active Ongoing task execution</p>
+    </div>
+
+    <!-- Pending -->
+    <div class="bg-gray-700 p-6 rounded-xl shadow-sm">
+        <h3 class="text-sm text-white font-semibold mb-1">Pending Tasks</h3>
+        <p class="text-3xl font-bold text-white">{{ pending }}</p>
+        <p class="text-xs text-yellow-600 mt-1">Awaiting action</p>
+    </div>
+
+    <!-- Completion Rate -->
+    <div class="bg-gray-700 p-6 rounded-xl shadow-sm">
+        <h3 class="text-sm text-white font-semibold mb-1">Completion Rate</h3>
+        <p class="text-3xl font-bold text-white">{{ completion_rate }}%</p>
+        <p class="text-xs text-red-600 mt-1">{{ completion_rate }}% Since last update</p>
+    </div>
+</div>
+
+        </div>
+
         {% block content %}
-        <!-- Page-specific content will be inserted here by extending templates -->
         {% endblock %}
     </main>
 </body>
