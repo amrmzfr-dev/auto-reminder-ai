@@ -25,50 +25,97 @@ class CustomUser(AbstractUser):
 # 🧾 INSTALLER PROFILE MODEL
 # -----------------------------------------------
 
+STATUS_CHOICES = [
+    ('incomplete', 'Incomplete'),
+    ('submitted', 'Submitted'),
+    ('approved', 'Approved'),
+    ('rejected', 'Rejected'),
+]
+
+STATE_CHOICES = [
+    ('Central 1', 'Central 1'),
+    ('Central 2', 'Central 2'),
+    # Add other states if needed
+]
+
+LICENSE_CLASS_CHOICES = [
+    ('A', 'Class A'),
+    ('B', 'Class B'),
+    ('C', 'Class C'),
+]
+
+CIDB_CATEGORY_CHOICES = [
+    ('CIVIL', 'Civil'),
+    ('BUILDING', 'Building'),
+    # Add other CIDB categories
+]
+
+CIDB_GRADE_CHOICES = [
+    ('G1', 'G1'), ('G2', 'G2'), ('G3', 'G3'), ('G4', 'G4'),
+    ('G5', 'G5'), ('G6', 'G6'), ('G7', 'G7'),
+]
+
 class InstallerProfile(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='installer_profile')
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
 
-    # Essential fields for registration
-    company_name = models.CharField("Registered Company Name", max_length=255)
-    company_ssm_number = models.CharField("Company Registration Number (SSM)", max_length=50)
-    operational_state = models.CharField(
-        max_length=50,
-        choices=[
-            ('Central 1', 'Wilayah Persekutuan KL, Putrajaya'),
-            ('Central 2', 'Selangor'),
-            ('Northern', 'Perak, Kedah, Perlis, Penang'),
-            ('Southern', 'N.Sembilan, Melaka, Johor'),
-            ('East Coast', 'Pahang, Terengganu, Kelantan'),
-            ('East Malaysia', 'Sabah, Sarawak'),
-        ]
-    )
-
-    # PIC (Person in Charge)
-    pic_name = models.CharField("PIC Name", max_length=255)
-    pic_designation = models.CharField("PIC Designation", max_length=100)
-    pic_contact_number = models.CharField("PIC Contact Number", max_length=15)
-
-    # Deferred fields to be filled in profile later
-    company_address = models.TextField("Business Address", blank=True)
+    # Basic company and PIC details
+    company_name = models.CharField(max_length=255, null=True, blank=True)
+    company_ssm_number = models.CharField(max_length=100, null=True, blank=True)
+    operational_state = models.CharField(max_length=50, choices=STATE_CHOICES, null=True, blank=True)
+    company_address = models.TextField(null=True, blank=True)
     year_established = models.PositiveIntegerField(null=True, blank=True)
+
+    pic_name = models.CharField(max_length=255, null=True, blank=True)
+    pic_designation = models.CharField(max_length=100, null=True, blank=True)
+    pic_contact_number = models.CharField(max_length=20, null=True, blank=True)
+    pic_email = models.EmailField(null=True, blank=True)
+
+    # Compliance and certification
     epf_contributors = models.PositiveIntegerField(null=True, blank=True)
-
-    # Regulatory and licensing (optional)
     is_st_registered = models.BooleanField(default=False)
-    contractor_license_class = models.CharField(max_length=1, choices=[('A', 'A'), ('B', 'B'), ('C', 'C')], blank=True)
-    is_cidb_registered = models.BooleanField(default=False)
-    cidb_category = models.CharField(max_length=100, blank=True)
-    cidb_grade = models.CharField(max_length=20, blank=True)
-    is_sst_registered = models.BooleanField(default=False)
-    sst_number = models.CharField(max_length=50, blank=True)
-    has_insurance = models.BooleanField(default=False)
-    has_coi_history = models.BooleanField(default=False)
+    license_class = models.CharField(max_length=10, choices=LICENSE_CLASS_CHOICES, null=True, blank=True)
 
-    # Timestamp
+    is_cidb_registered = models.BooleanField(default=False)
+    cidb_category = models.CharField(max_length=100, choices=CIDB_CATEGORY_CHOICES, null=True, blank=True)
+    cidb_grade = models.CharField(max_length=10, choices=CIDB_GRADE_CHOICES, null=True, blank=True)
+
+    is_sst_registered = models.BooleanField(default=False)
+    sst_number = models.CharField(max_length=100, null=True, blank=True)
+
+    has_insurance = models.BooleanField(default=False)
+    coi_history = models.BooleanField(default=False)
+
+    # Status & timestamps
+    registration_status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='incomplete'
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def save(self, *args, **kwargs):
+        # Required fields for submission
+        required_fields = [
+            self.company_name,
+            self.pic_name,
+            self.pic_contact_number,
+            self.pic_email,
+            self.company_ssm_number,
+            self.operational_state,
+            self.pic_designation,
+            self.company_address,
+            self.year_established,
+            self.epf_contributors,
+        ]
+
+        # If all required fields are filled and status is still incomplete
+        if all(required_fields) and self.registration_status == 'incomplete':
+            self.registration_status = 'submitted'
+
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return self.company_name
+        return f"{self.company_name or 'Unnamed Installer'}"
 
 # -----------------------------------------------
 # 📋 TASK MANAGEMENT MODEL

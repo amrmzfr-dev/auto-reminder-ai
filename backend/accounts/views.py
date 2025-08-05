@@ -8,8 +8,16 @@ from functools import wraps # Used for preserving metadata of decorated function
 from .models import CustomUser
 from .models import Task
 from .forms import TaskForm
-from .forms import InstallerRegistrationForm
+from django.shortcuts import render, redirect
+from django.contrib.auth import login
+from .forms import ContractorRegisterForm
 from .models import InstallerProfile
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import DetailView, UpdateView
+from django.urls import reverse_lazy
+from .forms import InstallerProfileForm 
+from django.utils.decorators import method_decorator
+from .forms import AdminRegistrationForm
 
 # Get the custom user model, which is likely where the 'role' field is defined.
 # This ensures compatibility if a custom user model is used instead of Django's default.
@@ -90,83 +98,61 @@ def login_view(request):
 # -----------------------------------------------
 # 👤 Register View with Role Assignment
 # -----------------------------------------------
-def register_view(request):
+def admin_register_view(request):
     """
-    Handles user registration, validates the data, creates a new user with a specified role,
-    and logs them in before redirecting to their role-specific dashboard.
-
-    Args:
-        request (HttpRequest): The HTTP request object.
-
-    Returns:
-        HttpResponse: Renders the registration page or redirects to a dashboard.
+    Admin-only registration view. Handles account creation with role 'Admin'.
     """
     if request.method == 'POST':
-        # Get registration data from the POST request
-        username = request.POST['username']
-        password1 = request.POST['password']
-        password2 = request.POST['password2']
-        role = request.POST.get('role')  # Expects 'role' to be in the form data
-
-        # Validate the passwords and username
-        if password1 != password2:
-            messages.error(request, 'Passwords do not match')
-        elif User.objects.filter(username=username).exists():
-            messages.error(request, 'Username already exists')
-        elif role not in ['1', '2']: # Ensure the selected role is valid
-            messages.error(request, 'Invalid role selected')
-        else:
-            # Create a new user with the provided details and role
-            user = User.objects.create_user(username=username, password=password1, role=role)
-            # Log the new user in immediately
+        form = AdminRegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
             login(request, user)
+            return redirect('admin_dashboard')
+    else:
+        form = AdminRegistrationForm()
 
-            # Redirect post-registration based on the assigned role
-            if user.role == '1':
-                return redirect('admin_dashboard')
-            elif user.role == '2':
-                return redirect('installer_dashboard')
-            else:
-                return redirect('admin_dashboard')
-
-    # Render the registration page for GET requests or if validation fails
-    return render(request, 'accounts/register.html')
+    return render(request, 'accounts/admin_register.html', {'form': form})
 
 
 def installer_register(request):
     if request.method == 'POST':
-        form = InstallerRegistrationForm(request.POST)
+        form = ContractorRegisterForm(request.POST)
         if form.is_valid():
+            # Create user account
             user = form.save(commit=False)
             user.role = '2'  # Installer
+            user.is_active = True  # Optional: mark inactive for approval flow
             user.save()
 
+            # Create minimal installer profile
             InstallerProfile.objects.create(
                 user=user,
                 company_name=form.cleaned_data['company_name'],
-                company_ssm_number=form.cleaned_data['company_ssm_number'],
-                operational_state=form.cleaned_data['operational_state'],
                 pic_name=form.cleaned_data['pic_name'],
-                pic_designation=form.cleaned_data['pic_designation'],
                 pic_contact_number=form.cleaned_data['pic_contact_number'],
-                company_address=form.cleaned_data.get('company_address', ''),
-                year_established=form.cleaned_data.get('year_established'),
-                epf_contributors=form.cleaned_data.get('epf_contributors'),
-                is_st_registered=form.cleaned_data.get('is_st_registered', False),
-                contractor_license_class=form.cleaned_data.get('contractor_license_class'),
-                is_cidb_registered=form.cleaned_data.get('is_cidb_registered', False),
-                cidb_category=form.cleaned_data.get('cidb_category', ''),
-                cidb_grade=form.cleaned_data.get('cidb_grade', ''),
-                is_sst_registered=form.cleaned_data.get('is_sst_registered', False),
-                sst_number=form.cleaned_data.get('sst_number', ''),
-                has_insurance=form.cleaned_data.get('has_insurance', False),
-                has_coi_history=form.cleaned_data.get('has_coi_history', False),
+                pic_email=form.cleaned_data['pic_email'],
+                registration_status='incomplete'  # Add this field if not already in your model
             )
 
-            return redirect('login')
+            # Optionally auto-login the user
+            # login(request, user)
+
+            return redirect('login')  # Or use 'complete_profile' for onboarding continuation
     else:
-        form = InstallerRegistrationForm()
-    return render(request, 'accounts/installer/installer_register.html', {'form': form})
+        form = ContractorRegisterForm()
+
+    left_fields = ['username','company_name','password1', 'password2']
+    right_fields = [ 'pic_name', 'pic_email', 'pic_contact_number', 'agree_terms']
+
+    return render(
+        request,
+        'accounts/installer/installer_register.html',
+        {
+            'form': form,
+            'left_fields': left_fields,
+            'right_fields': right_fields,
+        }
+    )
 
 # 🚪 Logout View
 def logout_view(request):
@@ -237,12 +223,38 @@ def installer_dashboard_view(request):
     Returns:
         HttpResponse: Renders the installer dashboard template.
     """
-    # Renders the installer dashboard template.
-    # This view currently does not pass any specific context data,
-    # but could be extended to show installer-specific tasks.
+
+    try:
+        profile = InstallerProfile.objects.get(user=request.user)
+        if profile.registration_status == 'incomplete':
+            messages.warning(
+                request,
+                "⚠️ Your registration is incomplete. Please complete your company profile to proceed."
+            )
+    except InstallerProfile.DoesNotExist:
+        messages.error(request, "Installer profile not found. Please contact support.")
+        return redirect('logout')  # Or another fallback action
+
     return render(request, 'accounts/installer/installer_dashboard.html')
 
+@method_decorator([login_required, role_required('2')], name='dispatch')
+class ProfileDetailView(LoginRequiredMixin, DetailView):
+    model = InstallerProfile
+    template_name = 'accounts/installer/profile_detail.html'
 
+    def get_object(self):
+        return self.request.user.installerprofile
+
+
+@method_decorator([login_required, role_required('2')], name='dispatch')
+class ProfileUpdateView(LoginRequiredMixin, UpdateView):
+    model = InstallerProfile
+    form_class = InstallerProfileForm
+    template_name = 'accounts/installer/profile_edit.html'
+    success_url = reverse_lazy('company_profile')
+
+    def get_object(self):
+        return self.request.user.installerprofile
 # -----------------------------------------------
 # ➕ Add Task View (Admin Only)
 # -----------------------------------------------
@@ -347,8 +359,5 @@ def delete_task(request, pk):
 
 @role_required('1')  # Only Admins can access this
 def installer_list_view(request):
-    installers = CustomUser.objects.filter(role='2')
-    context = {
-        'installers': installers,
-    }
-    return render(request, 'accounts/admin/admin_installer_list.html', context)
+    installers = User.objects.filter(role='2').select_related('installerprofile')  # Correct related_name
+    return render(request, 'accounts/admin/admin_installer_list.html', {'installers': installers})

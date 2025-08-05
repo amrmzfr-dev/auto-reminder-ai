@@ -28,10 +28,11 @@
         }
     </style>
 </head>
+{% load widget_tweaks %}
 <body class="bg-gray-100 dark:bg-gray-900">
     <div class="flex items-center justify-center min-h-screen">
         <div class="relative flex flex-col m-6 space-y-8 bg-white dark:bg-gray-800 shadow-2xl rounded-2xl md:flex-row md:space-y-0">
-            <div class="flex flex-col justify-center p-8 md:p-14">
+            <div class="flex flex-col justify-center p-2 md:p-8">
                 <div class="flex justify-center items-center mb-6">
                     <svg class="w-12 h-12 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -43,32 +44,71 @@
                 <span class="font-light text-gray-500 dark:text-gray-400 mb-8 text-center">
                     Get started with a more organized workflow.
                 </span>
-
-                <form method="post">
+                <form method="post" class="w-full max-w-6xl mx-auto bg-gray-800 p-6">
                     {% csrf_token %}
                     
-                    {% for field in form %}
-                        <div class="py-4">
-                            <label for="{{ field.id_for_label }}" class="mb-2 text-md font-medium text-gray-700 dark:text-gray-300">
-                                {{ field.label }}{% if field.field.required %} *{% endif %}
-                            </label>
-                            
-                            {{ field }}
-                            
-                            {% if field.help_text %}
-                                <p class="text-xs text-gray-400 mt-1">{{ field.help_text }}</p>
-                            {% endif %}
-                            
-                            {% if field.errors %}
-                                <div class="errorlist">
-                                    {% for error in field.errors %}
-                                        <li>{{ error }}</li>
-                                    {% endfor %}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Left Column -->
+                        <div>
+                            {% for field in form %}
+                                {% if field.name in left_fields %}
+                                <div class="py-4">
+                                    <label for="{{ field.id_for_label }}" class="block mb-2 text-md font-medium text-gray-300">
+                                        {{ field.label }}{% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
+                                    </label>
+
+                                    {% if field.field.widget.input_type == "checkbox" %}
+                                        <div class="flex items-center space-x-2">
+                                            {{ field }}
+                                            <span class="text-sm text-gray-400">{{ field.label }}</span>
+                                        </div>
+                                    {% else %}
+                                        {{ field }}
+                                    {% endif %}
+
+                                    {% if field.errors %}
+                                        <ul class="text-sm text-red-600 mt-1">
+                                            {% for error in field.errors %}
+                                                <li>{{ error }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
                                 </div>
-                            {% endif %}
+                                {% endif %}
+                            {% endfor %}
                         </div>
-                    {% endfor %}
-                    
+
+                        <!-- Right Column -->
+                        <div>
+                            {% for field in form %}
+                                {% if field.name in right_fields %}
+                                <div class="py-4">
+                                    <label for="{{ field.id_for_label }}" class="block mb-2 text-md font-medium text-gray-300">
+                                        {{ field.label }}{% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
+                                    </label>
+
+                                    {% if field.field.widget.input_type == "checkbox" %}
+                                        <div class="flex items-center space-x-2">
+                                            {{ field }}
+                                            <span class="text-sm text-gray-400">{{ field.label }}</span>
+                                        </div>
+                                    {% else %}
+                                        {{ field }}
+                                    {% endif %}
+
+                                    {% if field.errors %}
+                                        <ul class="text-sm text-red-600 mt-1">
+                                            {% for error in field.errors %}
+                                                <li>{{ error }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+
                     {% if form.non_field_errors %}
                         <div class="my-3 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg" role="alert">
                             {{ form.non_field_errors }}
@@ -82,12 +122,11 @@
                         Register
                     </button>
 
-                    <div class="text-center text-gray-500 dark:text-gray-400">
+                    <div class="text-center text-gray-400">
                         Already have an account?
-                        <a href="{% url 'login' %}" class="font-bold text-blue-600 hover:underline">Login here</a>
+                        <a href="{% url 'login' %}" class="font-bold text-blue-500 hover:underline">Login here</a>
                     </div>
                 </form>
-
             </div>
 
             <div class="relative">

@@ -46,6 +46,9 @@
                 <a class="sidebar-link flex items-center p-3 rounded-lg hover:bg-gray-700 transition-colors duration-200 {% if request.resolver_match.url_name == 'installer_dashboard' %}active{% endif %}" href="{% url 'installer_dashboard' %}">
                     <i class="fas fa-tools w-5 h-5 mr-3"></i> Installer Dashboard
                 </a>
+                <a class="sidebar-link flex items-center p-3 rounded-lg hover:bg-gray-700 transition-colors duration-200 {% if request.resolver_match.url_name == 'company_profile' %}active{% endif %}" href="{% url 'company_profile' %}">
+                    <i class="fas fa-building w-5 h-5 mr-3"></i> Company Profile
+                </a>
             {% endif %}
         </nav>
 
