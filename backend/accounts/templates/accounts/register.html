@@ -39,6 +39,7 @@
                 <form method="post">
                     {% csrf_token %}
                     
+                    <!-- Username -->
                     <div class="py-4">
                         <label for="username" class="mb-2 text-md font-medium text-gray-700 dark:text-gray-300">Username</label>
                         <input 
@@ -51,6 +52,7 @@
                         >
                     </div>
 
+                    <!-- Password -->
                     <div class="py-4">
                         <label for="password" class="mb-2 text-md font-medium text-gray-700 dark:text-gray-300">Password</label>
                         <input 
@@ -62,7 +64,8 @@
                             class="w-full p-3 border border-gray-300 rounded-lg placeholder:font-light placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                         >
                     </div>
-                    
+
+                    <!-- Confirm Password -->
                     <div class="py-4">
                         <label for="password2" class="mb-2 text-md font-medium text-gray-700 dark:text-gray-300">Confirm Password</label>
                         <input 
@@ -75,25 +78,43 @@
                         >
                     </div>
 
-                    <!-- Displaying Django form errors -->
+                    <!-- Role -->
+                    <div class="py-4">
+                        <label for="role" class="mb-2 text-md font-medium text-gray-700 dark:text-gray-300">Register As</label>
+                        <select 
+                            name="role" 
+                            id="role" 
+                            required
+                            class="w-full p-3 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            <option value="" disabled selected>Select a role</option>
+                            <option value="1">Admin</option>
+                            <option value="2">Installer</option>
+                        </select>
+                    </div>
+
+                    <!-- Error Message -->
                     {% if error %}
                         <div class="my-3 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg" role="alert">
                             <p>{{ error }}</p>
                         </div>
                     {% endif %}
-                    
+
+                    <!-- Submit -->
                     <button 
                         type="submit"
                         class="w-full bg-blue-600 text-white p-3 rounded-lg my-6 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-300"
                     >
                         Register
                     </button>
-                    
+
+                    <!-- Link to Login -->
                     <div class="text-center text-gray-500 dark:text-gray-400">
                         Already have an account?
                         <a href="{% url 'login' %}" class="font-bold text-blue-600 hover:underline">Login here</a>
                     </div>
                 </form>
+
             </div>
 
             <!-- Right Panel: Image -->

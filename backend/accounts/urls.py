@@ -4,12 +4,18 @@ from . import views
 urlpatterns = [
     path('login/', views.login_view, name='login'),
     path('register/', views.register_view, name='register'),
+    path('register_installer/', views.installer_register, name='installer_register'),
     path('logout/', views.logout_view, name='logout'),
-    path('dashboard/', views.dashboard_view, name='dashboard'),
 
-    # CRUD
+    # Dashboards
+    path('admin_dashboard/', views.dashboard_view, name='admin_dashboard'),
+    path('installer_dashboard/', views.installer_dashboard_view, name='installer_dashboard'),
+
+    # Installer List (Admin only)
+    path('admin/installers/', views.installer_list_view, name='installer_list'),
+
+    # Task CRUD
     path('task/add/', views.add_task, name='add_task'),
     path('task/edit/<int:pk>/', views.edit_task, name='edit_task'),
     path('task/delete/<int:pk>/', views.delete_task, name='delete_task'),
 ]
-
