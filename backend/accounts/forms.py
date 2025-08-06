@@ -1,7 +1,6 @@
 from django import forms
-from .models import Task
+from .models import Task, CustomUser, InstallerProfile
 from django.contrib.auth.forms import UserCreationForm
-from .models import CustomUser, InstallerProfile
 
 class AdminRegistrationForm(UserCreationForm):
     class Meta:
@@ -78,31 +77,48 @@ class ContractorRegisterForm(UserCreationForm):
         }
 
 class InstallerProfileForm(forms.ModelForm):
+    # +++ ADDED __init__ METHOD TO APPLY WIDGET CLASSES DYNAMICALLY +++
+    def __init__(self, *args, **kwargs):
+        """
+        Applies CSS classes to widgets for consistent styling and to enable the
+        modern toggle-switch UI for boolean fields.
+        """
+        super().__init__(*args, **kwargs)
+        
+        # Apply the 'sr-only peer' class to all boolean fields.
+        # This is necessary for the custom toggle switch UI in the template.
+        checkbox_fields = [
+            'is_st_registered', 'is_cidb_registered', 'is_sst_registered',
+            'has_insurance', 'has_coi_history'
+        ]
+        for field_name in checkbox_fields:
+            if field_name in self.fields:
+                self.fields[field_name].widget.attrs.update({
+                    'class': 'sr-only peer'
+                })
+
     class Meta:
         model = InstallerProfile
         exclude = ['user', 'created_at', 'registration_status']
-
         labels = {
-            'is_st_registered': 'Is ST Registered',
-            'company_name': 'Company Name',
-            'company_ssm_number': 'Company SSM Number',
-            'operational_state': 'Operational State',
-            'year_established': 'Year Established',
-            'epf_contributors': 'EPF Contributors',
-            'company_address': 'Company Address',
-            'pic_name': 'PIC Name',
-            'pic_designation': 'PIC Designation',
-            'pic_contact_number': 'PIC Contact Number',
-            'pic_email': 'PIC Email',
-            'contractor_license_class': 'Contractor License Class',
+            'is_st_registered': 'ST Registered',
+            'license_class': 'Contractor License Class',
+            'st_certificate': 'ST Certification (PDF)',
+
+            'is_cidb_registered': 'CIDB Registered',
             'cidb_grade': 'CIDB Grade',
             'cidb_category': 'CIDB Category',
+            'cidb_certificate': 'CIDB Certificate (PDF)',
+
+            'is_sst_registered': 'SST Registered',
             'sst_number': 'SST Number',
-            'is_sst_registered': 'Is SST Registered',
-            'is_cidb_registered': 'Is CIDB Registered',
-            'is_registered': 'Is Registered',
+            'sst_certificate': 'SST Certificate (PDF)',
+
             'has_insurance': 'Has Insurance',
+            'insurance_certificate': 'PLWC Insurance Certificate (PDF)',
+
             'has_coi_history': 'Has COI History',
+            'coi_certificate': 'COI Certificate (PDF)',
         }
 
         widgets = {
@@ -116,12 +132,9 @@ class InstallerProfileForm(forms.ModelForm):
             'pic_designation': forms.TextInput(attrs={'class': 'w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600'}),
             'pic_contact_number': forms.TextInput(attrs={'class': 'w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600'}),
             'pic_email': forms.EmailInput(attrs={'class': 'w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600'}),
-
-            # Updated to SELECT widgets for fields with choices
             'contractor_license_class': forms.Select(attrs={'class': 'w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600'}),
             'cidb_grade': forms.Select(attrs={'class': 'w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600'}),
             'cidb_category': forms.Select(attrs={'class': 'w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600'}),
-
             'sst_number': forms.TextInput(attrs={'class': 'w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600'}),
         }
 

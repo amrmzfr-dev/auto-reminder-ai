@@ -25,6 +25,9 @@ class CustomUser(AbstractUser):
 # 🧾 INSTALLER PROFILE MODEL
 # -----------------------------------------------
 
+def upload_to_cert(instance, filename):
+    return f'certificates/{instance.user.id}/{filename}'
+
 STATUS_CHOICES = [
     ('incomplete', 'Incomplete'),
     ('submitted', 'Submitted'),
@@ -64,6 +67,7 @@ class InstallerProfile(models.Model):
     operational_state = models.CharField(max_length=50, choices=STATE_CHOICES, null=True, blank=True)
     company_address = models.TextField(null=True, blank=True)
     year_established = models.PositiveIntegerField(null=True, blank=True)
+    epf_contributors = models.PositiveIntegerField(null=True, blank=True)
 
     pic_name = models.CharField(max_length=255, null=True, blank=True)
     pic_designation = models.CharField(max_length=100, null=True, blank=True)
@@ -71,19 +75,29 @@ class InstallerProfile(models.Model):
     pic_email = models.EmailField(null=True, blank=True)
 
     # Compliance and certification
-    epf_contributors = models.PositiveIntegerField(null=True, blank=True)
+    # ST Registration
     is_st_registered = models.BooleanField(default=False)
     license_class = models.CharField(max_length=10, choices=LICENSE_CLASS_CHOICES, null=True, blank=True)
+    st_certificate = models.FileField(upload_to=upload_to_cert, null=True, blank=True)
 
+    # CIDB Registration
     is_cidb_registered = models.BooleanField(default=False)
     cidb_category = models.CharField(max_length=100, choices=CIDB_CATEGORY_CHOICES, null=True, blank=True)
     cidb_grade = models.CharField(max_length=10, choices=CIDB_GRADE_CHOICES, null=True, blank=True)
+    cidb_certificate = models.FileField(upload_to=upload_to_cert, null=True, blank=True)
 
+    # SST Registration
     is_sst_registered = models.BooleanField(default=False)
     sst_number = models.CharField(max_length=100, null=True, blank=True)
+    sst_certificate = models.FileField(upload_to=upload_to_cert, null=True, blank=True)
 
-    has_insurance = models.BooleanField(default=False)
+    # Insurance (PLWC)
+    plwc_has_insurance = models.BooleanField(default=False)
+    insurance_certificate = models.FileField(upload_to=upload_to_cert, null=True, blank=True)
+
+    # Inspection COI for EVCS
     coi_history = models.BooleanField(default=False)
+    coi_certificate = models.FileField(upload_to=upload_to_cert, null=True, blank=True)
 
     # Status & timestamps
     registration_status = models.CharField(
