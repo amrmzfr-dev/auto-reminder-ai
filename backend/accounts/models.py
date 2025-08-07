@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
-
+from multiselectfield import MultiSelectField
 # -----------------------------------------------
 # 🔐 CUSTOM USER MODEL WITH ROLE-BASED ACCESS
 # -----------------------------------------------
@@ -25,8 +25,16 @@ class CustomUser(AbstractUser):
 # 🧾 INSTALLER PROFILE MODEL
 # -----------------------------------------------
 
+
 def upload_to_cert(instance, filename):
     return f'certificates/{instance.user.id}/{filename}'
+
+class State(models.Model):
+    code = models.CharField(max_length=20, unique=True)  # e.g., "Central 1"
+    name = models.CharField(max_length=100)  # e.g., "Central 1 (Wilayah Persekutuan Kuala Lumpur, Putrajaya)"
+
+    def __str__(self):
+        return self.name
 
 STATUS_CHOICES = [
     ('incomplete', 'Incomplete'),
@@ -36,9 +44,12 @@ STATUS_CHOICES = [
 ]
 
 STATE_CHOICES = [
-    ('Central 1', 'Central 1'),
-    ('Central 2', 'Central 2'),
-    # Add other states if needed
+    ('Central 1', 'Central 1 (Wilayah Persekutuan Kuala Lumpur, Putrajaya)'),
+    ('Central 2', 'Central 2 (Selangor)'),
+    ('Northern', 'Northern (Perak, Kedah, Perlis, Pulau Pinang)'),
+    ('Southern', 'Southern (N.Sembilan, Melaka, Johor)'),
+    ('East Coast', 'East Coast (Pahang, Terengganu, Kelantan)'),
+    ("East M'sia", "East M'sia (Sabah, Sarawak)"),
 ]
 
 LICENSE_CLASS_CHOICES = [
@@ -48,9 +59,9 @@ LICENSE_CLASS_CHOICES = [
 ]
 
 CIDB_CATEGORY_CHOICES = [
-    ('CIVIL', 'Civil'),
-    ('BUILDING', 'Building'),
-    # Add other CIDB categories
+    ('B', 'B (Building)'),
+    ('CE', 'CE (Civil Engineering)'),
+    ('ME', 'ME (Mechanical & Electrical)'),
 ]
 
 CIDB_GRADE_CHOICES = [
@@ -64,7 +75,7 @@ class InstallerProfile(models.Model):
     # Basic company and PIC details
     company_name = models.CharField(max_length=255, null=True, blank=True)
     company_ssm_number = models.CharField(max_length=100, null=True, blank=True)
-    operational_state = models.CharField(max_length=50, choices=STATE_CHOICES, null=True, blank=True)
+    operational_states = models.ManyToManyField(State, blank=True)
     company_address = models.TextField(null=True, blank=True)
     year_established = models.PositiveIntegerField(null=True, blank=True)
     epf_contributors = models.PositiveIntegerField(null=True, blank=True)
@@ -115,7 +126,6 @@ class InstallerProfile(models.Model):
             self.pic_contact_number,
             self.pic_email,
             self.company_ssm_number,
-            self.operational_state,
             self.pic_designation,
             self.company_address,
             self.year_established,
@@ -130,6 +140,9 @@ class InstallerProfile(models.Model):
 
     def __str__(self):
         return f"{self.company_name or 'Unnamed Installer'}"
+    
+
+
 
 # -----------------------------------------------
 # 📋 TASK MANAGEMENT MODEL

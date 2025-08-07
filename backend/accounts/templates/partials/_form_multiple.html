@@ -1,0 +1,16 @@
+{# templates/partials/_form_multiple.html #}
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-start">
+    <span class="text-gray-300 font-medium sm:text-right sm:pt-3">{{ field.label }}</span>
+    <div class="sm:col-span-2 space-y-2">
+        {% for checkbox in field %}
+            <label class="inline-flex items-center space-x-3 cursor-pointer bg-gray-800 p-3 rounded-lg border border-gray-600 hover:bg-gray-700 transition">
+                {{ checkbox.tag }}
+                <span class="text-white text-sm">{{ checkbox.choice_label }}</span>
+            </label>
+        {% endfor %}
+
+        {% for error in field.errors %}
+            <p class="mt-2 text-sm text-red-500">{{ error }}</p>
+        {% endfor %}
+    </div>
+</div>
