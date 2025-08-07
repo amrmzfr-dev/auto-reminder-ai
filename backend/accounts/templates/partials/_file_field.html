@@ -1,0 +1,7 @@
+{% comment %} Renders a file field using the custom upload widget. {% endcomment %}
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-start">
+    <label for="{{ field.id_for_label }}" class="text-gray-300 font-medium sm:text-right sm:pt-3">{{ field.label }}</label>
+    <div class="sm:col-span-2">
+        {% include 'partials/_file_upload_widget.html' with field=field %}
+    </div>
+</div>

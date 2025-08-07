@@ -1,0 +1,28 @@
+{% comment %} 
+This widget requires a 'field' context variable, which is the Django form field.
+Example usage: {% include 'partials/_file_upload_widget.html' with field=form.st_certificate %}
+{% endcomment %}
+
+<div class="file-upload-wrapper">
+    <label for="{{ field.id_for_label }}" class="flex flex-col items-center justify-center w-full h-40 border-2 border-gray-600 border-dashed rounded-lg cursor-pointer bg-gray-800 hover:bg-gray-700 hover:border-gray-500 transition-colors duration-300">
+        <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center">
+            <svg class="w-10 h-10 mb-4 text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+            </svg>
+            
+            <p class="mb-2 text-sm text-gray-400">
+                <span class="font-semibold text-sky-400">Browse file to upload</span>
+            </p>
+            <p class="text-xs text-gray-500" id="file-name-display-{{ field.id_for_label }}">
+                Or drag and drop (optional)
+            </p>
+            <p class="mt-2 text-xs text-green-400 font-mono hidden" id="selected-file-{{ field.id_for_label }}"></p>
+
+        </div>
+        {{ field }}
+    </label>
+    
+    {% for error in field.errors %}
+        <p class="mt-2 text-sm text-red-500">{{ error }}</p>
+    {% endfor %}
+</div>

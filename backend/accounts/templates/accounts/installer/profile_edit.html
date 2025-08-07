@@ -2,8 +2,9 @@
 {% block title %}Edit Company Profile - AutoReminder{% endblock %}
 
 {% block content %}
-<div>
-    <form method="post" novalidate class="w-full">
+<div class="py-8">
+    {# IMPORTANT: Added enctype for file uploads #}
+    <form method="post" enctype="multipart/form-data" novalidate class="w-full">
         {% csrf_token %}
 
         <div class="bg-gray-800 rounded-2xl shadow-2xl overflow-hidden max-w-6xl mx-auto">
@@ -23,45 +24,7 @@
 
             <div class="p-6 md:p-8 flex flex-col gap-8">
                 
-                <div class="bg-gray-900/50 border border-gray-700 rounded-xl">
-                    <div class="p-6 border-b border-gray-700">
-                        <h3 class="text-base font-semibold text-white flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-                            Person-In-Charge (PIC)
-                        </h3>
-                    </div>
-                    <div class="p-6 space-y-6">
-                        {% with field=form.pic_name %}<div class="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 items-start">
-                            <label for="{{ field.id_for_label }}" class="text-gray-300 font-medium sm:text-right sm:pt-2">{{ field.label }}</label>
-                            <div class="sm:col-span-2">
-                                {{ field }}
-                                {% for error in field.errors %}<p class="mt-2 text-xs text-red-500">{{ error }}</p>{% endfor %}
-                            </div>
-                        </div>{% endwith %}
-                        {% with field=form.pic_designation %}<div class="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 items-start">
-                            <label for="{{ field.id_for_label }}" class="text-gray-300 font-medium sm:text-right sm:pt-2">{{ field.label }}</label>
-                            <div class="sm:col-span-2">
-                                {{ field }}
-                                {% for error in field.errors %}<p class="mt-2 text-xs text-red-500">{{ error }}</p>{% endfor %}
-                            </div>
-                        </div>{% endwith %}
-                        {% with field=form.pic_contact_number %}<div class="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 items-start">
-                            <label for="{{ field.id_for_label }}" class="text-gray-300 font-medium sm:text-right sm:pt-2">{{ field.label }}</label>
-                            <div class="sm:col-span-2">
-                                {{ field }}
-                                {% for error in field.errors %}<p class="mt-2 text-xs text-red-500">{{ error }}</p>{% endfor %}
-                            </div>
-                        </div>{% endwith %}
-                        {% with field=form.pic_email %}<div class="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 items-start">
-                            <label for="{{ field.id_for_label }}" class="text-gray-300 font-medium sm:text-right sm:pt-2">{{ field.label }}</label>
-                            <div class="sm:col-span-2">
-                                {{ field }}
-                                {% for error in field.errors %}<p class="mt-2 text-xs text-red-500">{{ error }}</p>{% endfor %}
-                            </div>
-                        </div>{% endwith %}
-                    </div>
-                </div>
-
+                <!-- Corporate Information Section -->
                 <div class="bg-gray-900/50 border border-gray-700 rounded-xl">
                     <div class="p-6 border-b border-gray-700">
                         <h3 class="text-base font-semibold text-white flex items-center">
@@ -70,15 +33,32 @@
                         </h3>
                     </div>
                     <div class="p-6 space-y-6">
-                        {% with field=form.company_name %}<div class="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 items-start"><label for="{{ field.id_for_label }}" class="text-gray-300 font-medium sm:text-right sm:pt-2">{{ field.label }}</label><div class="sm:col-span-2">{{ field }}{% for error in field.errors %}<p class="mt-2 text-xs text-red-500">{{ error }}</p>{% endfor %}</div></div>{% endwith %}
-                        {% with field=form.company_ssm_number %}<div class="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 items-start"><label for="{{ field.id_for_label }}" class="text-gray-300 font-medium sm:text-right sm:pt-2">{{ field.label }}</label><div class="sm:col-span-2">{{ field }}{% for error in field.errors %}<p class="mt-2 text-xs text-red-500">{{ error }}</p>{% endfor %}</div></div>{% endwith %}
-                        {% with field=form.operational_state %}<div class="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 items-start"><label for="{{ field.id_for_label }}" class="text-gray-300 font-medium sm:text-right sm:pt-2">{{ field.label }}</label><div class="sm:col-span-2">{{ field }}{% for error in field.errors %}<p class="mt-2 text-xs text-red-500">{{ error }}</p>{% endfor %}</div></div>{% endwith %}
-                        {% with field=form.year_established %}<div class="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 items-start"><label for="{{ field.id_for_label }}" class="text-gray-300 font-medium sm:text-right sm:pt-2">{{ field.label }}</label><div class="sm:col-span-2">{{ field }}{% for error in field.errors %}<p class="mt-2 text-xs text-red-500">{{ error }}</p>{% endfor %}</div></div>{% endwith %}
-                        {% with field=form.epf_contributors %}<div class="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 items-start"><label for="{{ field.id_for_label }}" class="text-gray-300 font-medium sm:text-right sm:pt-2">{{ field.label }}</label><div class="sm:col-span-2">{{ field }}{% for error in field.errors %}<p class="mt-2 text-xs text-red-500">{{ error }}</p>{% endfor %}</div></div>{% endwith %}
-                        {% with field=form.company_address %}<div class="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 items-start"><label for="{{ field.id_for_label }}" class="text-gray-300 font-medium sm:text-right sm:pt-2">{{ field.label }}</label><div class="sm:col-span-2">{{ field }}{% for error in field.errors %}<p class="mt-2 text-xs text-red-500">{{ error }}</p>{% endfor %}</div></div>{% endwith %}
+                        {% include 'partials/_form_field.html' with field=form.company_name %}
+                        {% include 'partials/_form_field.html' with field=form.company_ssm_number %}
+                        {% include 'partials/_form_field.html' with field=form.operational_state %}
+                        {% include 'partials/_form_field.html' with field=form.year_established %}
+                        {% include 'partials/_form_field.html' with field=form.epf_contributors %}
+                        {% include 'partials/_form_field.html' with field=form.company_address %}
                     </div>
                 </div>
 
+                <!-- Person-In-Charge (PIC) Section -->
+                <div class="bg-gray-900/50 border border-gray-700 rounded-xl">
+                    <div class="p-6 border-b border-gray-700">
+                        <h3 class="text-base font-semibold text-white flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                            Person-In-Charge (PIC)
+                        </h3>
+                    </div>
+                    <div class="p-6 space-y-6">
+                        {% include 'partials/_form_field.html' with field=form.pic_name %}
+                        {% include 'partials/_form_field.html' with field=form.pic_designation %}
+                        {% include 'partials/_form_field.html' with field=form.pic_contact_number %}
+                        {% include 'partials/_form_field.html' with field=form.pic_email %}
+                    </div>
+                </div>
+
+                <!-- Compliance & Licensing Section (UPDATED) -->
                 <div class="bg-gray-900/50 border border-gray-700 rounded-xl">
                     <div class="p-6 border-b border-gray-700">
                         <h3 class="text-base font-semibold text-white flex items-center">
@@ -88,120 +68,78 @@
                     </div>
                     <div class="divide-y divide-gray-700">
                         <!-- ST Registration Section -->
-                        <div class="px-6 py-8 grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 items-center">
-                            <label class="text-gray-300 font-medium sm:text-right">{{ form.is_st_registered.label }}</label>
-                            <div class="sm:col-span-2 flex flex-col sm:flex-row sm:items-center gap-4">
-                                {% include 'accounts/installer/_toggle_switch.html' with field=form.is_st_registered %}
-                            </div>
-                            <label class="text-gray-300 font-medium sm:text-right">{{ form.license_class.label }}</label>
-                            <div class="sm:col-span-2 flex flex-col sm:flex-row sm:items-center gap-4">
-                                <div class="flex-grow">
-                                    {{ form.license_class }}
-                                    {% for error in form.license_class.errors %}
-                                        <p class="mt-2 text-xs text-red-500">{{ error }}</p>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                            <label class="text-gray-300 font-medium sm:text-right">{{ form.st_certificate.label }}</label>
-                                <div class="sm:col-span-2 flex flex-col sm:flex-row sm:items-center gap-4">
-                                    <div class="flex-grow">
-                                        {{ form.st_certificate }}
-                                        {% for error in form.st_certificate.errors %}
-                                            <p class="mt-2 text-xs text-red-500">{{ error }}</p>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="p-6 space-y-6">
+                            {% include 'partials/_toggle_field.html' with field=form.is_st_registered %}
+                            {% include 'partials/_form_field.html' with field=form.license_class %}
+                            {% include 'partials/_file_field.html' with field=form.st_certificate %}
                         </div>
 
                         <!-- CIDB Registration Section -->
-                        <div class="px-6 py-8 space-y-6">
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 items-center">
-                                <label class="text-gray-300 font-medium sm:text-right">{{ form.is_cidb_registered.label }}</label>
-                                <div class="sm:col-span-2 flex items-center">
-                                    {% include 'accounts/installer/_toggle_switch.html' with field=form.is_cidb_registered %}
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 items-start">
-                                <label for="{{ form.cidb_grade.id_for_label }}" class="text-gray-400 sm:text-right sm:pt-2">{{ form.cidb_grade.label }}</label>
-                                <div class="sm:col-span-2">
-                                    {{ form.cidb_grade }}
-                                    {% for error in form.cidb_grade.errors %}
-                                        <p class="mt-2 text-xs text-red-500">{{ error }}</p>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 items-start">
-                                <label for="{{ form.cidb_category.id_for_label }}" class="text-gray-400 sm:text-right sm:pt-2">{{ form.cidb_category.label }}</label>
-                                <div class="sm:col-span-2">
-                                    {{ form.cidb_category }}
-                                    {% for error in form.cidb_category.errors %}
-                                        <p class="mt-2 text-xs text-red-500">{{ error }}</p>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 items-start">
-                                <label for="{{ form.cidb_certificate.id_for_label }}" class="text-gray-400 sm:text-right sm:pt-2">{{ form.cidb_certificate.label }}</label>
-                                <div class="sm:col-span-2">
-                                    {{ form.cidb_certificate }}
-                                    {% for error in form.cidb_certificate.errors %}
-                                        <p class="mt-2 text-xs text-red-500">{{ error }}</p>
-                                    {% endfor %}
-                                </div>
-                            </div>
+                        <div class="p-6 space-y-6">
+                            {% include 'partials/_toggle_field.html' with field=form.is_cidb_registered %}
+                            {% include 'partials/_form_field.html' with field=form.cidb_grade %}
+                            {% include 'partials/_form_field.html' with field=form.cidb_category %}
+                            {% include 'partials/_file_field.html' with field=form.cidb_certificate %}
                         </div>
 
                         <!-- SST Registration Section -->
-                        <div class="px-6 py-8 grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 items-center">
-                            <label class="text-gray-300 font-medium sm:text-right">{{ form.is_sst_registered.label }}</label>
-                            <div class="sm:col-span-2 flex flex-col sm:flex-row sm:items-center gap-4">
-                                {% include 'accounts/installer/_toggle_switch.html' with field=form.is_sst_registered %}
-                                <div class="flex-grow">
-                                    {{ form.sst_number }}
-                                    {% for error in form.sst_number.errors %}
-                                        <p class="mt-2 text-xs text-red-500">{{ error }}</p>
-                                    {% endfor %}
-                                </div>
-                                <div class="flex-grow">
-                                    {{ form.sst_certificate }}
-                                    {% for error in form.sst_certificate.errors %}
-                                        <p class="mt-2 text-xs text-red-500">{{ error }}</p>
-                                    {% endfor %}
-                                </div>
-                            </div>
+                        <div class="p-6 space-y-6">
+                            {% include 'partials/_toggle_field.html' with field=form.is_sst_registered %}
+                            {% include 'partials/_form_field.html' with field=form.sst_number %}
+                            {% include 'partials/_file_field.html' with field=form.sst_certificate %}
                         </div>
 
                         <!-- Insurance Section -->
-                        <div class="px-6 py-8 grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 items-start">
-                            <label class="text-gray-300 font-medium sm:text-right">{{ form.has_insurance.label }}</label>
-                            <div class="sm:col-span-2">
-                                {% include 'accounts/installer/_toggle_switch.html' with field=form.has_insurance %}
-                                <div class="mt-4">
-                                    {{ form.insurance_certificate }}
-                                    {% for error in form.insurance_certificate.errors %}
-                                        <p class="mt-2 text-xs text-red-500">{{ error }}</p>
-                                    {% endfor %}
-                                </div>
-                            </div>
+                        <div class="p-6 space-y-6">
+                            {% include 'partials/_toggle_field.html' with field=form.plwc_has_insurance %}
+                            {% include 'partials/_file_field.html' with field=form.insurance_certificate %}
                         </div>
 
                         <!-- COI Section -->
-                        <div class="px-6 py-8 grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 items-start">
-                            <label class="text-gray-300 font-medium sm:text-right">{{ form.has_coi_history.label }}</label>
-                            <div class="sm:col-span-2">
-                                {% include 'accounts/installer/_toggle_switch.html' with field=form.has_coi_history %}
-                                <div class="mt-4">
-                                    {{ form.coi_certificate }}
-                                    {% for error in form.coi_certificate.errors %}
-                                        <p class="mt-2 text-xs text-red-500">{{ error }}</p>
-                                    {% endfor %}
-                                </div>
-                            </div>
+                        <div class="p-6 space-y-6">
+                            {% include 'partials/_toggle_field.html' with field=form.coi_history %}
+                            {% include 'partials/_file_field.html' with field=form.coi_certificate %}
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </form>
 </div>
+
+<!-- Add this script at the bottom of your template, before the closing </body> tag -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // This script handles the file name display for the custom file upload widgets.
+    const fileInputs = document.querySelectorAll('.custom-file-input');
+    
+    fileInputs.forEach(function(input) {
+        input.addEventListener('change', function(e) {
+            const inputId = e.target.id;
+            const file = e.target.files[0];
+            const fileNameDisplay = document.getElementById('selected-file-' + inputId);
+            const defaultTextDisplay = document.getElementById('file-name-display-' + inputId);
+
+            if (file) {
+                // Show the selected file name
+                fileNameDisplay.textContent = file.name;
+                fileNameDisplay.classList.remove('hidden');
+                
+                // Hide the default "Or drag and drop" text
+                if (defaultTextDisplay) {
+                    defaultTextDisplay.classList.add('hidden');
+                }
+            } else {
+                // If no file is chosen, reset to default state
+                fileNameDisplay.textContent = '';
+                fileNameDisplay.classList.add('hidden');
+                if (defaultTextDisplay) {
+                    defaultTextDisplay.classList.remove('hidden');
+                }
+            }
+        });
+    });
+});
+</script>
 {% endblock %}

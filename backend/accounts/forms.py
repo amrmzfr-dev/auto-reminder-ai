@@ -76,20 +76,21 @@ class ContractorRegisterForm(UserCreationForm):
             })
         }
 
+from django import forms
+from .models import InstallerProfile
+
 class InstallerProfileForm(forms.ModelForm):
-    # +++ ADDED __init__ METHOD TO APPLY WIDGET CLASSES DYNAMICALLY +++
     def __init__(self, *args, **kwargs):
         """
-        Applies CSS classes to widgets for consistent styling and to enable the
-        modern toggle-switch UI for boolean fields.
+        Applies CSS classes to widgets for consistent styling, custom toggle switches,
+        and the custom file upload UI.
         """
         super().__init__(*args, **kwargs)
         
-        # Apply the 'sr-only peer' class to all boolean fields.
-        # This is necessary for the custom toggle switch UI in the template.
+        # Apply 'sr-only peer' class to all boolean fields for the toggle switch UI
         checkbox_fields = [
             'is_st_registered', 'is_cidb_registered', 'is_sst_registered',
-            'has_insurance', 'has_coi_history'
+            'plwc_has_insurance', 'coi_history'
         ]
         for field_name in checkbox_fields:
             if field_name in self.fields:
@@ -97,9 +98,25 @@ class InstallerProfileForm(forms.ModelForm):
                     'class': 'sr-only peer'
                 })
 
+        # ### ADDED THIS SECTION ###
+        # Apply classes to all file fields for the custom file upload UI
+        file_fields = [
+            'st_certificate', 'cidb_certificate', 'sst_certificate',
+            'insurance_certificate', 'coi_certificate'
+        ]
+        for field_name in file_fields:
+            if field_name in self.fields:
+                self.fields[field_name].widget.attrs.update({
+                    'class': 'custom-file-input', # The JS selector
+                    'hidden': True                # Hides the default browser input
+                })
+
     class Meta:
         model = InstallerProfile
         exclude = ['user', 'created_at', 'registration_status']
+        
+        # Note: Ensure the keys here exactly match your model's field names.
+        # For example, use 'has_insurance' if that's the field name, not 'plwc_has_insurance'.
         labels = {
             'is_st_registered': 'ST Registered',
             'license_class': 'Contractor License Class',
@@ -114,10 +131,10 @@ class InstallerProfileForm(forms.ModelForm):
             'sst_number': 'SST Number',
             'sst_certificate': 'SST Certificate (PDF)',
 
-            'has_insurance': 'Has Insurance',
+            'plwc_has_insurance': 'Has Insurance',
             'insurance_certificate': 'PLWC Insurance Certificate (PDF)',
 
-            'has_coi_history': 'Has COI History',
+            'coi_history': 'Has COI History',
             'coi_certificate': 'COI Certificate (PDF)',
         }
 
@@ -132,7 +149,8 @@ class InstallerProfileForm(forms.ModelForm):
             'pic_designation': forms.TextInput(attrs={'class': 'w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600'}),
             'pic_contact_number': forms.TextInput(attrs={'class': 'w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600'}),
             'pic_email': forms.EmailInput(attrs={'class': 'w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600'}),
-            'contractor_license_class': forms.Select(attrs={'class': 'w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600'}),
+            # Corrected field name from 'contractor_license_class' to 'license_class' to match model
+            'license_class': forms.Select(attrs={'class': 'w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600'}),
             'cidb_grade': forms.Select(attrs={'class': 'w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600'}),
             'cidb_category': forms.Select(attrs={'class': 'w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600'}),
             'sst_number': forms.TextInput(attrs={'class': 'w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600'}),

@@ -1,0 +1,10 @@
+{% comment %} Renders a boolean field as a styled toggle switch. {% endcomment %}
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
+    <label for="{{ field.id_for_label }}" class="text-gray-300 font-medium sm:text-right">{{ field.label }}</label>
+    <div class="sm:col-span-2">
+        {% include 'partials/_toggle_switch.html' with field=field %}
+        {% for error in field.errors %}
+            <p class="mt-2 text-sm text-red-500">{{ error }}</p>
+        {% endfor %}
+    </div>
+</div>
