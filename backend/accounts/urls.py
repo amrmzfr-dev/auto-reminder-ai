@@ -11,12 +11,13 @@ urlpatterns = [
     # Dashboards
     path('admin_dashboard/', views.dashboard_view, name='admin_dashboard'),
     path('installer_dashboard/', views.installer_dashboard_view, name='installer_dashboard'),
-     path('company-profile/', ProfileDetailView.as_view(), name='company_profile'),
-     path('company-profile/edit/', ProfileUpdateView.as_view(), name='edit_company_profile'),
+    path('company-profile/', ProfileDetailView.as_view(), name='company_profile'),
+    path('company-profile/edit/', ProfileUpdateView.as_view(), name='edit_company_profile'),
 
     # Installer List (Admin only)
     path('admin/installers/', views.installer_list_view, name='installer_list'),
-
+    path('installations/', views.installation_page_view, name='installer_list'),
+    path('installations/create/', views.create_installation_view, name='create_installation'),
     # Task CRUD
     path('task/add/', views.add_task, name='add_task'),
     path('task/edit/<int:pk>/', views.edit_task, name='edit_task'),

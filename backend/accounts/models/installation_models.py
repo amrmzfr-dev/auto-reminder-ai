@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings  # For referencing CustomUser
-from models import InstallerProfile  # Replace with the actual path to your InstallerProfile model
+from ..models import InstallerProfile  # Replace with the actual path to your InstallerProfile model
 
 # ----------------------------
 # Customer

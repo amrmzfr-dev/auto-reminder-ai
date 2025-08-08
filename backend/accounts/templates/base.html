@@ -46,8 +46,8 @@
                     <i class="fas fa-icons w-5 h-5 mr-3"></i> Installer List
                 </a>
 
-                <a class="sidebar-link flex items-center p-3 rounded-lg hover:bg-gray-700 transition-colors duration-200" href="#">
-                    <i class="fas fa-table w-5 h-5 mr-3"></i> Tables
+                <a class="sidebar-link flex items-center p-3 rounded-lg hover:bg-gray-700 transition-colors duration-200 {% if request.resolver_match.url_name == 'create_installation' %}active{% endif %}" href="{% url 'create_installation' %}">
+                    <i class="fas fa-table w-5 h-5 mr-3"></i> Register Installation
                 </a>
             {% elif request.user.role == '2' %}
                 <!-- Installer links -->

@@ -7,3 +7,4 @@
 from .auth_views import *
 from .admin_views import *
 from .installer_views import *
+from .installation_views import *
