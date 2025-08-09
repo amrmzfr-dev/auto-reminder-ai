@@ -16,8 +16,9 @@ urlpatterns = [
 
     # Installer List (Admin only)
     path('admin/installers/', views.installer_list_view, name='installer_list'),
-    path('installations/', views.installation_page_view, name='installer_list'),
+    path('installations/', views.installation_page_view, name='installation_page_view'),
     path('installations/create/', views.create_installation_view, name='create_installation'),
+    path('admin/installations/', views.installation_list_view, name='installation_list'),
     # Task CRUD
     path('task/add/', views.add_task, name='add_task'),
     path('task/edit/<int:pk>/', views.edit_task, name='edit_task'),

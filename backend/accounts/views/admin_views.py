@@ -4,8 +4,9 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from functools import wraps
-from ..models import Task
+from ..models import Task, Installation
 from ..forms import TaskForm
+
 
 # Get the custom user model.
 User = get_user_model()
@@ -152,3 +153,11 @@ def installer_list_view(request):
     # Retrieve all users with role '2' (Installers) and pre-fetch their profiles for efficiency.
     installers = User.objects.filter(role='2').select_related('installerprofile')
     return render(request, 'accounts/admin/admin_installer_list.html', {'installers': installers})
+
+@role_required('1')  # Only Admins can access
+def installation_list_view(request):
+    installations = Installation.objects.select_related('customer', 'charger_model').order_by('-created_at')
+
+    return render(request, 'accounts/admin/admin_installation_list.html', {
+        'installations': installations
+    })

@@ -31,15 +31,16 @@ def create_installation_view(request):
     if request.method == 'POST':
         form = InstallationForm(request.POST)
         if form.is_valid():
+            print("[DEBUG] Form is valid")
             try:
-                # The custom save method in InstallationForm handles
-                # creating both the Customer and Installation objects.
                 form.save()
-                # No redirect or success feedback — just fall through
-                form = InstallationForm()  # Reset to empty form if you want it cleared
+                print("[DEBUG] Form saved successfully")
+                form = InstallationForm()  # Reset form if needed
             except Exception as e:
                 form.add_error(None, f"An error occurred during saving: {e}")
-                print(f"Error saving installation: {e}")
+                print(f"[ERROR] Saving error: {e}")
+        else:
+            print(f"[ERROR] Form errors: {form.errors}")
     else:
         form = InstallationForm()
 

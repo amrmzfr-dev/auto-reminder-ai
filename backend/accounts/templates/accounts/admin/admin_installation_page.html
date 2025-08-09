@@ -4,12 +4,14 @@
 {% block title %}Create New Installation - Your App Name{% endblock %}
 
 {% block content %}
-<div class="py-8">
-    {# Form starts here with common styling #}
-    <form method="post" enctype="multipart/form-data" novalidate class="w-full">
+{# The overall container for the page, setting a dark background #}
+<div class="py-8 bg-gray-900 min-h-screen flex items-center justify-center">
+    {# Form starts here #}
+    <form method="post" enctype="multipart/form-data" novalidate class="w-full max-w-6xl">
         {% csrf_token %}
 
-        <div class="bg-gray-800 rounded-md shadow-2xl overflow-hidden max-w-6xl mx-auto">
+        {# Main form container: Dark background, rounded corners, shadow #}
+        <div class="bg-gray-800 rounded-md shadow-2xl overflow-hidden">
 
             {# Header section with title and buttons #}
             <div class="p-6 md:p-8 border-b border-gray-700 flex flex-col sm:flex-row justify-between sm:items-center gap-4">
@@ -30,195 +32,58 @@
             <div class="p-6 md:p-8 flex flex-col gap-8">
 
                 {% if form.non_field_errors %}
-                    <ul class="errorlist text-red-400 bg-red-900/20 p-4 rounded-md border border-red-700">
+                    {# Error list styling for dark theme #}
+                    <ul class="text-red-400 bg-red-900/20 p-4 rounded-md border border-red-700">
                         {% for error in form.non_field_errors %}
                             <li>{{ error }}</li>
                         {% endfor %}
                     </ul>
                 {% endif %}
 
-                <!-- Customer Details Section (mimicking Corporate Information) -->
+                <!-- Customer Details Section -->
+                {# Section container: dark background, border, rounded corners #}
                 <div class="bg-gray-900/50 border border-gray-700 rounded-md">
                     <div class="p-6 border-b border-gray-700">
+                        {# Header text and icon for dark theme #}
                         <h3 class="text-base font-semibold text-white flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h-4v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2H1m16 0h2a2 2 0 002-2v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2H1m16 0v1H1m4 0h2v1H5m10-1v1h-2v-1h2z" /></svg>
                             Customer Information
                         </h3>
                     </div>
                     <div class="p-6 space-y-6">
-                        {# Rendering form fields directly. If you have custom _form_field.html, you can use that #}
-                        {% for field in form %}
-                            {% if field.name in "customer_name,contact_person,customer_email,phone_number,address,city,state,postcode" %}
-                                <div class="form-field-group">
-                                    <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-300 mb-1">{{ field.label }}</label>
-                                    {{ field }}
-                                    {% if field.help_text %}
-                                        <p class="mt-1 text-xs text-gray-500">{{ field.help_text }}</p>
-                                    {% endif %}
-                                    {% if field.errors %}
-                                        <ul class="errorlist text-red-400 text-sm mt-1">{% for error in field.errors %}<li>{{ error }}</li>{% endfor %}</ul>
-                                    {% endif %}
-                                </div>
-                            {% endif %}
-                        {% endfor %}
+                        {# Includes form fields, assuming partials handle their own dark-theme styling for inputs/labels #}
+                        {% include 'partials/_form_field.html' with field=form.customer_name %}
+                        {% include 'partials/_form_field.html' with field=form.contact_person %}
+                        {% include 'partials/_form_field.html' with field=form.customer_email %}
+                        {% include 'partials/_form_field.html' with field=form.phone_number %}
+                        {% include 'partials/_form_field.html' with field=form.address %}
+                        {% include 'partials/_form_field.html' with field=form.city %}
+                        {% include 'partials/_form_field.html' with field=form.state %}
+                        {% include 'partials/_form_field.html' with field=form.house_type %}
+                        {% include 'partials/_form_field.html' with field=form.postcode %}
                     </div>
                 </div>
 
-                <!-- Installation Details Section (mimicking PIC Section) -->
+                <!-- Installation Details Section -->
+                {# Section container: dark background, border, rounded corners #}
                 <div class="bg-gray-900/50 border border-gray-700 rounded-md">
                     <div class="p-6 border-b border-gray-700">
+                        {# Header text and icon for dark theme #}
                         <h3 class="text-base font-semibold text-white flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /></svg>
                             Installation Details
                         </h3>
                     </div>
                     <div class="p-6 space-y-6">
-                        {% for field in form %}
-                            {% if field.name not in "customer_name,contact_person,customer_email,phone_number,address,city,state,postcode" %}
-                                <div class="form-field-group">
-                                    <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-300 mb-1">{{ field.label }}</label>
-                                    {{ field }}
-                                    {% if field.help_text %}
-                                        <p class="mt-1 text-xs text-gray-500">{{ field.help_text }}</p>
-                                    {% endif %}
-                                    {% if field.errors %}
-                                        <ul class="errorlist text-red-400 text-sm mt-1">{% for error in field.errors %}<li>{{ error }}</li>{% endfor %}</ul>
-                                    {% endif %}
-                                </div>
-                            {% endif %}
-                        {% endfor %}
+                        {# Includes form fields, assuming partials handle their own dark-theme styling for inputs/labels #}
+                        {% include 'partials/_form_field.html' with field=form.charger_model %}
+                        {% include 'partials/_form_field.html' with field=form.installer %}
+                        {% include 'partials/_form_field.html' with field=form.notes %}
                     </div>
                 </div>
-
-                {#
-                    The "Compliance & Licensing Section" and its associated JavaScript for toggling
-                    are from the "Edit Company Profile" form and are not directly applicable
-                    to the current InstallationForm fields.
-                    I've omitted them to avoid errors with non-existent fields,
-                    but the general styling for form fields has been adapted.
-                    If you intend to add similar toggleable sections for installation details,
-                    you would need to create corresponding fields in your Django form
-                    and then structure them similarly here.
-                #}
-
             </div> {# End of main content area #}
         </div> {# End of bg-gray-800 container #}
     </form>
 </div>
-
-{# Custom styles for form controls to fit the dark theme #}
-<style>
-    .form-field-group .form-control,
-    .form-field-group textarea,
-    .form-field-group select {
-        width: 100%;
-        padding: 0.75rem;
-        border: 1px solid #4b5563; /* Tailwind gray-600 */
-        border-radius: 0.5rem;
-        font-size: 1rem;
-        line-height: 1.5;
-        background-color: #374151; /* Tailwind gray-700 */
-        color: #d1d5db; /* Tailwind gray-300 */
-        transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-        box-sizing: border-box;
-        -webkit-appearance: none; /* Remove default styling for select/input */
-        -moz-appearance: none;
-        appearance: none;
-    }
-
-    .form-field-group .form-control:focus,
-    .form-field-group textarea:focus,
-    .form-field-group select:focus {
-        outline: none;
-        border-color: #6366f1; /* Tailwind indigo-500 */
-        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.5); /* Stronger focus ring */
-        background-color: #2d3748; /* Darker background on focus */
-    }
-
-    .form-field-group label {
-        color: #d1d5db; /* Tailwind gray-300 */
-    }
-
-    /* Styles for date inputs to ensure consistent appearance */
-    .form-field-group input[type="date"] {
-        /* Add specific styling for date inputs if default browser styling is problematic */
-    }
-
-    /* Styles for select arrows in dark theme */
-    .form-field-group select {
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23d1d5db'%3e%3cpath d='M7 7l3 3 3-3' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3e%3c/svg%3e");
-        background-repeat: no-repeat;
-        background-position: right 0.75rem center;
-        background-size: 1.5rem 1.5rem;
-    }
-</style>
-
-{# Add this script at the bottom of your template, before the closing </body> tag or {% endblock %} #}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // --- Script for File Name Display ---
-    // Note: This script assumes you have file input fields.
-    // As the current InstallationForm doesn't have file fields, this part won't
-    // have an effect unless you add them to your models/forms.
-    const fileInputs = document.querySelectorAll('.custom-file-input');
-    fileInputs.forEach(function(input) {
-        input.addEventListener('change', function(e) {
-            const inputId = e.target.id;
-            const file = e.target.files[0];
-            const fileNameDisplay = document.getElementById('selected-file-' + inputId);
-            const defaultTextDisplay = document.getElementById('file-name-display-' + inputId);
-
-            if (file) {
-                fileNameDisplay.textContent = file.name;
-                fileNameDisplay.classList.remove('hidden');
-                if (defaultTextDisplay) defaultTextDisplay.classList.add('hidden');
-            } else {
-                fileNameDisplay.textContent = '';
-                fileNameDisplay.classList.add('hidden');
-                if (defaultTextDisplay) defaultTextDisplay.classList.remove('hidden');
-            }
-        });
-    });
-
-    // --- Script for Disabling/Enabling Compliance Sections ---
-    // Note: This script is from your 'Edit Company Profile' example.
-    // The current InstallationForm does NOT have fields like 'is_st_registered',
-    // 'is_cidb_registered', etc., or the 'dependency-content' structure.
-    // This script will not function as intended without those corresponding
-    // elements in your InstallationForm HTML and Django Form.
-    // I've included it as per your request to "copy this style below",
-    // but be aware it needs specific HTML structure and form fields to work.
-    const complianceSections = document.querySelectorAll('.compliance-section');
-
-    function toggleSection(sectionElement) {
-        const toggleSwitch = sectionElement.querySelector('input[type="checkbox"]');
-        const content = sectionElement.querySelector('.dependency-content');
-        if (!content) return; // Exit if dependency-content is not found
-
-        const formElements = content.querySelectorAll('input, select, textarea, button');
-
-        if (toggleSwitch && toggleSwitch.checked) {
-            // Enable section
-            content.classList.remove('opacity-50', 'pointer-events-none');
-            formElements.forEach(el => el.disabled = false);
-        } else {
-            // Disable section
-            content.classList.add('opacity-50', 'pointer-events-none');
-            formElements.forEach(el => el.disabled = true);
-        }
-    }
-
-    complianceSections.forEach(section => {
-        // Set initial state on page load
-        toggleSection(section);
-
-        // Add event listener to the toggle switch
-        const toggleSwitch = section.querySelector('input[type="checkbox"]');
-        if (toggleSwitch) {
-            toggleSwitch.addEventListener('input', () => toggleSection(section));
-        }
-    });
-});
-</script>
 
 {% endblock content %}

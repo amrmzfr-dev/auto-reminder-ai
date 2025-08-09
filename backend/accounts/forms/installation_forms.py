@@ -8,33 +8,94 @@ User = get_user_model()
 # ----------------------------
 # Combined form for Installation and Customer
 # ----------------------------
+from django import forms
+from accounts.models import Installation, Customer, ChargerModel, InstallerProfile
+
 class InstallationForm(forms.ModelForm):
     # Customer Fields
-    customer_name = forms.CharField(max_length=200, label='Customer Name', widget=forms.TextInput(attrs={'class': 'form-control'}))
-    contact_person = forms.CharField(max_length=100, required=False, label='Contact Person', widget=forms.TextInput(attrs={'class': 'form-control'}))
-    customer_email = forms.EmailField(label='Customer Email', widget=forms.EmailInput(attrs={'class': 'form-control'}))
-    phone_number = forms.CharField(max_length=20, required=False, label='Phone Number', widget=forms.TextInput(attrs={'class': 'form-control'}))
-    address = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 4}))
-    city = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    state = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    postcode = forms.CharField(max_length=10, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    customer_name = forms.CharField(max_length=200, label='Customer Name')
+    contact_person = forms.CharField(max_length=100, required=False, label='Contact Person')
+    customer_email = forms.EmailField(label='Customer Email')
+    phone_number = forms.CharField(max_length=20, required=False, label='Phone Number')
+    address = forms.CharField(widget=forms.Textarea())
+    city = forms.CharField(max_length=100)
+
+    # State dropdown
+    state = forms.ChoiceField(
+        choices=Customer.STATE_CHOICES,
+        label='State'
+    )
+
+    def clean_state(self):
+        state = self.cleaned_data.get('state')
+        if not state:
+            raise forms.ValidationError("Please select a state.")
+        return state
+
+    # House Type dropdown
+    house_type = forms.ChoiceField(
+        choices=Customer.HOUSE_TYPE_CHOICES,
+        label='House Type'
+    )
+
+    postcode = forms.CharField(max_length=10)
+
+    # Charger dropdown
+    charger_model = forms.ModelChoiceField(
+        queryset=ChargerModel.objects.all(),
+        empty_label='Choose Charger Model',
+        label='Charger Model'
+    )
     
+    # Installer dropdown (optional)
+    installer = forms.ModelChoiceField(
+        queryset=InstallerProfile.objects.all(),
+        required=False,
+        empty_label='Choose Installer',
+        label='Installer'
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Make all fields required by default except installer
+        for field_name, field in self.fields.items():
+            if field_name == 'installer':
+                field.required = False
+            else:
+                field.required = True
+
+        # 'notes' optional
+        if 'notes' in self.fields:
+            self.fields['notes'].required = False
+
+        common_input_classes = 'w-9/12 bg-gray-700 text-white rounded-md p-3 border border-gray-600'
+
+        customer_fields = [
+            'customer_name', 'contact_person', 'customer_email',
+            'phone_number', 'address', 'city', 'state', 'house_type', 'postcode'
+        ]
+        for field_name in customer_fields:
+            if field_name in self.fields:
+                self.fields[field_name].widget.attrs.update({'class': common_input_classes})
+                if field_name == 'address' and isinstance(self.fields[field_name].widget, forms.Textarea):
+                    self.fields[field_name].widget.attrs['rows'] = 4
+
+        installation_fields = [
+            'charger_model', 'installer', 'notes'
+        ]
+        for field_name in installation_fields:
+            if field_name in self.fields:
+                self.fields[field_name].widget.attrs.update({'class': common_input_classes})
+                if field_name == 'notes' and isinstance(self.fields[field_name].widget, forms.Textarea):
+                    self.fields[field_name].widget.attrs['rows'] = 4
+
     class Meta:
         model = Installation
-        # Exclude 'customer' as it will be created and assigned separately
-        # 'created_at' and 'updated_at' are auto-populated
-        exclude = ('customer', 'created_at', 'updated_at')
-        
-        widgets = {
-            'installation_id': forms.TextInput(attrs={'class': 'form-control'}),
-            'charger_model': forms.Select(attrs={'class': 'form-control'}),
-            'installer': forms.Select(attrs={'class': 'form-control'}),
-            'installation_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-            'actual_completion_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-            'status': forms.Select(attrs={'class': 'form-control'}),
-            'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
-            'assigned_to': forms.Select(attrs={'class': 'form-control'}),
-        }
+        exclude = (
+            'customer', 'created_at', 'updated_at', 'installation_created_date', 'status'
+        )
+        widgets = {}
 
     def clean_customer_email(self):
         email = self.cleaned_data.get('customer_email')
@@ -43,10 +104,7 @@ class InstallationForm(forms.ModelForm):
         return email
 
     def save(self, commit=True):
-        """
-        Creates a new Customer instance and links it to the new Installation instance.
-        """
-        # Create a new Customer instance from the form data
+        print("[DEBUG] Starting form save()...")
         customer = Customer.objects.create(
             name=self.cleaned_data['customer_name'],
             contact_person=self.cleaned_data.get('contact_person'),
@@ -55,17 +113,21 @@ class InstallationForm(forms.ModelForm):
             address=self.cleaned_data['address'],
             city=self.cleaned_data['city'],
             state=self.cleaned_data['state'],
+            house_type=self.cleaned_data['house_type'],
             postcode=self.cleaned_data['postcode'],
         )
+        print(f"[DEBUG] Customer created: {customer}")
 
-        # Create the Installation instance
-        # Use the parent save method but exclude customer-related fields
         installation = super().save(commit=False)
-        installation.customer = customer  # Link the new customer
+        installation.customer = customer
+        installation.charger_model = self.cleaned_data['charger_model']
+        installation.installer = self.cleaned_data.get('installer')  # Set installer if provided
+
         if commit:
             installation.save()
-            self.save_m2m()  # For many-to-many relationships (not used here, but good practice)
-        
+            self.save_m2m()
+            print(f"[DEBUG] Installation created: {installation}")
+
         return installation
 
 # ----------------------------
