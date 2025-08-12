@@ -8,9 +8,8 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from functools import wraps
-from ..models import InstallerProfile
+from ..models import InstallerProfile, Installation
 from ..forms import InstallerProfileForm
-
 
 # -----------------------------------------------
 # 🛡️ Role-Based Access Control Decorator
@@ -43,27 +42,35 @@ def role_required(required_role):
 # ------------------------------
 # 👷 Installer Dashboard View
 # ------------------------------
-@role_required('2')  # Only users with role '2' (Installer) can access this view
+@role_required('2')
 def installer_dashboard_view(request):
-    """
-    Displays a simple dashboard for installer users and checks for an incomplete profile.
-    """
     try:
-        # Get the installer's profile, which is linked to the current user.
         profile = InstallerProfile.objects.get(user=request.user)
-        # Check if the profile registration is incomplete.
         if profile.registration_status == 'incomplete':
-            # Add a warning message for the user.
-            messages.warning(
-                request,
-                "⚠️ Your registration is incomplete. Please complete your company profile to proceed."
-            )
+            messages.warning(request, "⚠️ Your registration is incomplete. Please complete your company profile to proceed.")
     except InstallerProfile.DoesNotExist:
-        # If the profile doesn't exist, something is wrong. Log out the user.
         messages.error(request, "Installer profile not found. Please contact support.")
         return redirect('logout')
 
-    return render(request, 'accounts/installer/installer_dashboard.html')
+    # Filter installations for this installer only
+    installations = Installation.objects.filter(installer=profile).order_by('-installation_created_date')
+
+    # Your KPI stats code here (optional)
+    total_tasks = installations.count()
+    in_progress = installations.filter(status='In Progress').count()
+    pending = installations.filter(status='Scheduled').count()
+    completed = installations.filter(status='Completed').count()
+    completion_rate = int((completed / total_tasks) * 100) if total_tasks > 0 else 0
+
+    context = {
+        'profile': profile,
+        'installations': installations,
+        'total_tasks': total_tasks,
+        'in_progress': in_progress,
+        'pending': pending,
+        'completion_rate': completion_rate,
+    }
+    return render(request, 'accounts/installer/installer_dashboard.html', context)
 
 # -----------------------------------------------
 # 📋 Installer Profile Detail View (Class-Based)

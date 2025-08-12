@@ -70,6 +70,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'accounts.context_processors.task_metrics',
+                'accounts.context_processors.installer_task_metrics',
             ],
         },
     },

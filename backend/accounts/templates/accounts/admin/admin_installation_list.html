@@ -5,8 +5,7 @@
     <div class="max-w-8xl mx-auto">
         <h2 class="text-2xl font-semibold text-gray-100 mb-6">Installation Job List</h2>
 
-        <div class="overflow-x-auto">
-            <table class="min-w-full text-xs bg-gray-700 text-white rounded-md shadow-sm">
+            <div class="overflow-x-auto">
                 <table class="min-w-full text-sm bg-gray-700 text-white rounded-md shadow-sm">
                     <thead class="bg-gray-800">
                         <tr>
@@ -19,38 +18,38 @@
                         </tr>
                     </thead>
                     <tbody>
-                    {% for installation in installations %}
-                    <tr class="hover:bg-gray-600 transition duration-150 border-t border-gray-600">
-                        <td class="px-4 py-3 text-center">{{ installation.installation_id }}</td>
-                        <td class="px-4 py-3 text-center">{{ installation.customer.name }}</td>
-                        <td class="px-4 py-3 text-center">{{ installation.customer.city }}, {{ installation.customer.state }}</td>
-                        <td class="px-4 py-3 text-center">{{ installation.charger_model.model_name }}</td>
-                        <td class="px-4 py-3 text-center">{{ installation.installer|default:"-" }}</td>
-                        <td class="px-4 py-3 text-center">
-                            {% if installation.status == 'Completed' %}
-                                <span class="inline-block px-3 py-1 text-xs font-semibold text-green-100 bg-green-600 rounded-full">Completed</span>
-                            {% elif installation.status == 'In Progress' %}
-                                <span class="inline-block px-3 py-1 text-xs font-semibold text-yellow-100 bg-yellow-600 rounded-full">In Progress</span>
-                            {% elif installation.status == 'Scheduled' %}
-                                <span class="inline-block px-3 py-1 text-xs font-semibold text-gray-100 bg-gray-500 rounded-full">Scheduled</span>
-                            {% elif installation.status == 'On Hold' %}
-                                <span class="inline-block px-3 py-1 text-xs font-semibold text-orange-100 bg-orange-600 rounded-full">On Hold</span>
-                            {% else %}
-                                <span class="inline-block px-3 py-1 text-xs font-semibold text-red-100 bg-red-600 rounded-full">{{ installation.status }}</span>
-                            {% endif %}
-                        </td>
-                        {% comment %} <td class="px-4 py-3 text-center">
-                            <a href="{% url 'installation_detail' installation.id %}" class="text-blue-400 hover:underline">View</a>
-                        </td> {% endcomment %}
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="8" class="px-4 py-6 text-center text-gray-300">No installations found.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
+                        {% for installation in installations %}
+                        <tr class="hover:bg-gray-600 transition duration-150 border-t border-gray-600">
+                            <td class="px-4 py-3 text-center">{{ installation.installation_id }}</td>
+                            <td class="px-4 py-3 text-center">{{ installation.customer.name }}</td>
+                            <td class="px-4 py-3 text-center">{{ installation.customer.city }}, {{ installation.customer.state }}</td>
+                            <td class="px-4 py-3 text-center">{{ installation.charger_model.model_name }}</td>
+                            <td class="px-4 py-3 text-center">{{ installation.installer|default:"-" }}</td>
+                            <td class="px-4 py-3 text-center">
+                                {% if installation.status == 'Completed' %}
+                                    <span class="inline-block px-3 py-1 text-xs font-semibold text-green-100 bg-green-600 rounded-full">Completed</span>
+                                {% elif installation.status == 'In Progress' %}
+                                    <span class="inline-block px-3 py-1 text-xs font-semibold text-yellow-100 bg-yellow-600 rounded-full">In Progress</span>
+                                {% elif installation.status == 'Scheduled' %}
+                                    <span class="inline-block px-3 py-1 text-xs font-semibold text-gray-100 bg-gray-500 rounded-full">Scheduled</span>
+                                {% elif installation.status == 'On Hold' %}
+                                    <span class="inline-block px-3 py-1 text-xs font-semibold text-orange-100 bg-orange-600 rounded-full">On Hold</span>
+                                {% else %}
+                                    <span class="inline-block px-3 py-1 text-xs font-semibold text-red-100 bg-red-600 rounded-full">{{ installation.status }}</span>
+                                {% endif %}
+                            </td>
+                            {% comment %} <td class="px-4 py-3 text-center">
+                                <a href="{% url 'installation_detail' installation.id %}" class="text-blue-400 hover:underline">View</a>
+                            </td> {% endcomment %}
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="px-4 py-6 text-center text-gray-300">No installations found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
                 </table>
-        </div>
+            </div>
     </div>
 </div>
 {% endblock %}

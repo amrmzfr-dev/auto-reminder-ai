@@ -5,37 +5,37 @@
 {% block content %}
 <div class="min-h-screen">
   {% load custom_filters %}
-  <div class="bg-gray-800 rounded-xl shadow-lg p-6 mb-8 min-h-[100px]">
+    <div class="bg-gray-800 rounded-xl shadow-lg p-6 mb-8 min-h-[100px]">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Total Tasks -->
-                <div class="bg-gray-700 p-6 rounded-xl shadow-sm">
-                    <h3 class="text-sm text-white font-semibold mb-1">Total Tasks</h3>
-                    <p class="text-3xl font-bold text-white">{{ total_tasks }}</p>
-                    <p class="text-xs text-green-600 mt-1">+1% Since last month</p>
-                </div>
+            <!-- Total Tasks -->
+            <div class="bg-gray-700 p-6 rounded-xl shadow-sm">
+                <h3 class="text-sm text-white font-semibold mb-1">Total Tasks</h3>
+                <p class="text-3xl font-bold text-white">{{ total_tasks }}</p>
+                <p class="text-xs text-green-600 mt-1">+1% Since last month</p>
+            </div>
 
-                <!-- In Progress -->
-                <div class="bg-gray-700 p-6 rounded-xl shadow-sm">
-                    <h3 class="text-sm text-white font-semibold mb-1">In Progress</h3>
-                    <p class="text-3xl font-bold text-white">{{ in_progress }}</p>
-                    <p class="text-xs text-blue-600 mt-1">Active Ongoing task execution</p>
-                </div>
+            <!-- In Progress -->
+            <div class="bg-gray-700 p-6 rounded-xl shadow-sm">
+                <h3 class="text-sm text-white font-semibold mb-1">In Progress</h3>
+                <p class="text-3xl font-bold text-white">{{ in_progress }}</p>
+                <p class="text-xs text-blue-600 mt-1">Active Ongoing task execution</p>
+            </div>
 
-                <!-- Pending -->
-                <div class="bg-gray-700 p-6 rounded-xl shadow-sm">
-                    <h3 class="text-sm text-white font-semibold mb-1">Pending Tasks</h3>
-                    <p class="text-3xl font-bold text-white">{{ pending }}</p>
-                    <p class="text-xs text-yellow-600 mt-1">Awaiting action</p>
-                </div>
+            <!-- Pending -->
+            <div class="bg-gray-700 p-6 rounded-xl shadow-sm">
+                <h3 class="text-sm text-white font-semibold mb-1">Pending Tasks</h3>
+                <p class="text-3xl font-bold text-white">{{ pending }}</p>
+                <p class="text-xs text-yellow-600 mt-1">Awaiting action</p>
+            </div>
 
-                <!-- Completion Rate -->
-                <div class="bg-gray-700 p-6 rounded-xl shadow-sm">
-                    <h3 class="text-sm text-white font-semibold mb-1">Completion Rate</h3>
-                    <p class="text-3xl font-bold text-white">{{ completion_rate }}%</p>
-                    <p class="text-xs text-red-600 mt-1">{{ completion_rate }}% Since last update</p>
-                </div>
+            <!-- Completion Rate -->
+            <div class="bg-gray-700 p-6 rounded-xl shadow-sm">
+                <h3 class="text-sm text-white font-semibold mb-1">Completion Rate</h3>
+                <p class="text-3xl font-bold text-white">{{ completion_rate }}%</p>
+                <p class="text-xs text-red-600 mt-1">{{ completion_rate }}% Since last update</p>
             </div>
         </div>
+    </div>
   <div class="bg-gray-800 shadow-md rounded-lg p-6 text-white">
 
     <!-- Header + Actions -->
