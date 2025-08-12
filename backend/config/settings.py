@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'accounts',
     'widget_tweaks',
+    "storages",
 ]
 
 MIDDLEWARE = [
@@ -128,3 +129,20 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+        "OPTIONS": {
+            "bucket_name": "evtracker-bucket",
+            "custom_domain": "hmvdtnlmdllirvjeyxfb.supabase.co/storage/v1/object/public/evtracker-bucket",
+            "endpoint_url": "https://hmvdtnlmdllirvjeyxfb.storage.supabase.co/storage/v1/s3",
+            "access_key": "5a3b4ef8e8714dad304c5051ca987c75",
+            "secret_key": "01999aa6294d26a37025531277f3428c0199177c9f3a7a1dd3e784b1753c0143",
+        },
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
+

@@ -85,73 +85,209 @@
                     <div class="flex items-center justify-between">
                         <span class="font-semibold text-white text-sm">ST Registered</span>
                         {% if object.is_st_registered %}
-                            <span class="flex items-center text-sm text-green-400"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg> Yes</span>
+                            <span class="flex items-center text-sm text-green-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                </svg> Yes
+                            </span>
                         {% else %}
-                             <span class="flex items-center text-sm text-red-400"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg> No</span>
+                            <span class="flex items-center text-sm text-red-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                </svg> No
+                            </span>
                         {% endif %}
                     </div>
+
                     {% if object.is_st_registered %}
-                    <div class="text-sm text-gray-300 mt-2 border-t border-gray-600 pt-2">
-                        Class: <strong>{{ object.get_contractor_license_class_display|default:"-" }}</strong>
-                    </div>
+                        <div class="text-sm text-gray-300 mt-2 border-t border-gray-600 pt-2">
+                            Class: <strong>{{ object.get_license_class_display|default:"-" }}</strong>
+                        </div>
+
+                        {% if object.st_certificate %}
+                            <div class="mt-2 text-sm text-gray-300">
+                                <span class="font-semibold">Certificate:</span>
+                                <span>{{ object.st_certificate.name|slice:"20:"|default:"-" }}</span>
+                                <div class="mt-1 flex gap-2">
+                                    <a href="{{ object.st_certificate.url }}" target="_blank" class="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">
+                                        View
+                                    </a>
+                                     <a href="{{ object.st_certificate.url }}?download={{ object.st_certificate.name|basename }}"
+                                        class="px-2 py-1 bg-green-500 text-white rounded text-xs hover:bg-green-600">
+                                        Download
+                                    </a>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="mt-2 text-sm text-gray-400 italic">No certificate uploaded</div>
+                        {% endif %}
                     {% endif %}
                 </div>
 
+                <!-- CIDB Registered -->
                 <div class="bg-gray-700/50 p-4 rounded-lg">
                     <div class="flex items-center justify-between">
                         <span class="font-semibold text-white text-sm">CIDB Registered</span>
                         {% if object.is_cidb_registered %}
-                            <span class="flex items-center text-sm text-green-400"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg> Yes</span>
+                            <span class="flex items-center text-sm text-green-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                </svg> Yes
+                            </span>
                         {% else %}
-                             <span class="flex items-center text-sm text-red-400"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg> No</span>
+                            <span class="flex items-center text-sm text-red-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                </svg> No
+                            </span>
                         {% endif %}
                     </div>
+
                     {% if object.is_cidb_registered %}
-                    <div class="text-sm text-gray-300 mt-2 border-t border-gray-600 pt-2">
-                        Grade: <strong>{{ object.cidb_grade|default:"-" }}</strong><br>
-                        Category: <strong>{{ object.cidb_category|default:"-" }}</strong>
-                    </div>
+                        <div class="text-sm text-gray-300 mt-2 border-t border-gray-600 pt-2">
+                            Grade: <strong>{{ object.cidb_grade|default:"-" }}</strong><br>
+                            Category: <strong>{{ object.cidb_category|default:"-" }}</strong>
+                        </div>
+
+                        {% if object.cidb_certificate %}
+                            <div class="mt-2 text-sm text-gray-300">
+                                <span class="font-semibold">Certificate:</span>
+                                <span>{{ object.cidb_certificate.name|basename }}</span>
+                                <div class="mt-1 flex gap-2">
+                                    <a href="{{ object.cidb_certificate.url }}" target="_blank" class="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">
+                                        View
+                                    </a>
+                                    <a href="{{ object.cidb_certificate.url }}?download={{ object.cidb_certificate.name|basename }}"
+                                    class="px-2 py-1 bg-green-500 text-white rounded text-xs hover:bg-green-600">
+                                        Download
+                                    </a>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="mt-2 text-sm text-gray-400 italic">No certificate uploaded</div>
+                        {% endif %}
                     {% endif %}
                 </div>
 
+                <!-- SST Registered -->
                 <div class="bg-gray-700/50 p-4 rounded-lg">
                     <div class="flex items-center justify-between">
                         <span class="font-semibold text-white text-sm">SST Registered</span>
                         {% if object.is_sst_registered %}
-                            <span class="flex items-center text-sm text-green-400"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg> Yes</span>
+                            <span class="flex items-center text-sm text-green-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                </svg> Yes
+                            </span>
                         {% else %}
-                             <span class="flex items-center text-sm text-red-400"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg> No</span>
+                            <span class="flex items-center text-sm text-red-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                </svg> No
+                            </span>
                         {% endif %}
                     </div>
+
                     {% if object.is_sst_registered %}
-                    <div class="text-sm text-gray-300 mt-2 border-t border-gray-600 pt-2">
-                        Number: <strong>{{ object.sst_number|default:"-" }}</strong>
-                    </div>
+                        <div class="text-sm text-gray-300 mt-2 border-t border-gray-600 pt-2">
+                            Number: <strong>{{ object.sst_number|default:"-" }}</strong>
+                        </div>
+
+                        {% if object.sst_certificate %}
+                            <div class="mt-2 text-sm text-gray-300">
+                                <span class="font-semibold">Certificate:</span>
+                                <span>{{ object.sst_certificate.name|basename }}</span>
+                                <div class="mt-1 flex gap-2">
+                                    <a href="{{ object.sst_certificate.url }}" target="_blank" class="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">
+                                        View
+                                    </a>
+                                    <a href="{{ object.sst_certificate.url }}?download={{ object.sst_certificate.name|basename }}"
+                                    class="px-2 py-1 bg-green-500 text-white rounded text-xs hover:bg-green-600">
+                                        Download
+                                    </a>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="mt-2 text-sm text-gray-400 italic">No certificate uploaded</div>
+                        {% endif %}
                     {% endif %}
                 </div>
 
+                <!-- Has Insurance -->
                 <div class="bg-gray-700/50 p-4 rounded-lg">
                     <div class="flex items-center justify-between">
                         <span class="font-semibold text-white text-sm">Has Insurance</span>
-                        {% if object.has_insurance %}
-                            <span class="flex items-center text-sm text-green-400"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg> Yes</span>
+                        {% if object.plwc_has_insurance %}
+                            <span class="flex items-center text-sm text-green-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                </svg> Yes
+                            </span>
                         {% else %}
-                             <span class="flex items-center text-sm text-red-400"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg> No</span>
+                            <span class="flex items-center text-sm text-red-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                </svg> No
+                            </span>
                         {% endif %}
                     </div>
+
+                    {% if object.plwc_has_insurance and object.insurance_certificate %}
+                        <div class="mt-2 text-sm text-gray-300 border-t border-gray-600 pt-2">
+                            <span class="font-semibold">Certificate:</span>
+                            <span>{{ object.insurance_certificate.name|basename }}</span>
+                            <div class="mt-1 flex gap-2">
+                                <a href="{{ object.insurance_certificate.url }}" target="_blank" class="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">
+                                    View
+                                </a>
+                                <a href="{{ object.insurance_certificate.url }}?download={{ object.insurance_certificate.name|basename }}"
+                                class="px-2 py-1 bg-green-500 text-white rounded text-xs hover:bg-green-600">
+                                    Download
+                                </a>
+                            </div>
+                        </div>
+                    {% elif object.plwc_has_insurance %}
+                        <div class="mt-2 text-sm text-gray-400 italic">No certificate uploaded</div>
+                    {% endif %}
                 </div>
 
+                <!-- COI History -->
                 <div class="bg-gray-700/50 p-4 rounded-lg">
                     <div class="flex items-center justify-between">
                         <span class="font-semibold text-white text-sm">Has COI History</span>
-                        {% if object.has_coi_history %}
-                            <span class="flex items-center text-sm text-green-400"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg> Yes</span>
+                        {% if object.coi_history %}
+                            <span class="flex items-center text-sm text-green-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                </svg> Yes
+                            </span>
                         {% else %}
-                             <span class="flex items-center text-sm text-red-400"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg> No</span>
+                            <span class="flex items-center text-sm text-red-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                </svg> No
+                            </span>
                         {% endif %}
                     </div>
-                </div>
 
+                    {% if object.coi_history and object.coi_certificate %}
+                        <div class="mt-2 text-sm text-gray-300 border-t border-gray-600 pt-2">
+                            <span class="font-semibold">Certificate:</span>
+                            <span>{{ object.coi_certificate.name|basename }}</span>
+                            <div class="mt-1 flex gap-2">
+                                <a href="{{ object.coi_certificate.url }}" target="_blank" class="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">
+                                    View
+                                </a>
+                                <a href="{{ object.coi_certificate.url }}?download={{ object.coi_certificate.name|basename }}"
+                                class="px-2 py-1 bg-green-500 text-white rounded text-xs hover:bg-green-600">
+                                    Download
+                                </a>
+                            </div>
+                        </div>
+                    {% elif object.coi_history %}
+                        <div class="mt-2 text-sm text-gray-400 italic">No certificate uploaded</div>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>

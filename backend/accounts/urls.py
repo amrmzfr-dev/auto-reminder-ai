@@ -23,4 +23,7 @@ urlpatterns = [
     path('task/add/', views.add_task, name='add_task'),
     path('task/edit/<int:pk>/', views.edit_task, name='edit_task'),
     path('task/delete/<int:pk>/', views.delete_task, name='delete_task'),
+
+    # TEST
+    path('upload/', views.upload_file, name='upload_file'),
 ]

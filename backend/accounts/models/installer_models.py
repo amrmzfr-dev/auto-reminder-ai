@@ -1,3 +1,5 @@
+import os
+import re
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 # -----------------------------------------------
@@ -25,7 +27,30 @@ class CustomUser(AbstractUser):
 
 
 def upload_to_cert(instance, filename):
-    return f'certificates/{instance.user.id}/{filename}'
+    # Normalize company name for folder and filename
+    company_name = re.sub(r'[^A-Za-z0-9]+', '-', instance.company_name.upper()).strip('-')
+
+    # Map fields to suffix labels
+    field_suffix_mapping = {
+        'st_certificate': 'ST-CERTIFICATE',
+        'cidb_certificate': 'CIDB-CERTIFICATE',
+        'sst_certificate': 'SST-CERTIFICATE',
+        'insurance_certificate': 'INSURANCE-CERTIFICATE',
+        'coi_certificate' : 'COI-CERTIFICATE',
+    }
+
+    suffix = None
+    for field, suffix_label in field_suffix_mapping.items():
+        file_field = getattr(instance, field)
+        if file_field and file_field.name == filename:
+            suffix = suffix_label
+            break
+
+    ext = os.path.splitext(filename)[1]
+    new_filename = f"{company_name}_{suffix}{ext}" if suffix else filename
+
+    # Store all certs under a single company folder
+    return f"certificates/{company_name}/{new_filename}"
 
 class State(models.Model):
     code = models.CharField(max_length=20, unique=True)  # e.g., "Central 1"
