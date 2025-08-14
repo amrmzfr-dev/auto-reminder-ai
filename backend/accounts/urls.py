@@ -24,6 +24,9 @@ urlpatterns = [
     path('task/edit/<int:pk>/', views.edit_task, name='edit_task'),
     path('task/delete/<int:pk>/', views.delete_task, name='delete_task'),
 
+    # Installation
+    path('<str:installation_id>/', views.installation_detail, name='installation_detail'),
+    path('<str:installation_id>/<str:action>/', views.handle_installation_response, name='handle_installation_response'),
     # TEST
     path('upload/', views.upload_file, name='upload_file'),
 ]

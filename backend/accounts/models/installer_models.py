@@ -93,7 +93,8 @@ CIDB_GRADE_CHOICES = [
 ]
 
 class InstallerProfile(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, null=True, blank=True, help_text="The CustomUser account associated with this installer" \
+    "profile.")
 
     # Basic company and PIC details
     company_name = models.CharField(max_length=255, null=True, blank=True)
@@ -162,6 +163,6 @@ class InstallerProfile(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.company_name or 'Unnamed Installer'}"
+        return f"{self.company_name or 'Unnamed Installer Profile'}"
     
 

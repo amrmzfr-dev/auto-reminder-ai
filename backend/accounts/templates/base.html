@@ -6,98 +6,125 @@
     <title>{% block title %}AutoReminder{% endblock %}</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
 
     <style>
         body {
             font-family: "Inter", sans-serif;
-            padding-left: 16rem;
+            background-color: #171717;
         }
-        .sidebar-link.active {
-            background-color: #4f46e5;
-            color: #ffffff;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
-        .hide-scrollbar::-webkit-scrollbar {
-        display: none;
-        }
-
-        .hide-scrollbar {
-            -ms-overflow-style: none;  /* IE/Edge */
-            scrollbar-width: none;     /* Firefox */
+        /* We will apply active styles directly with Tailwind, so this class is no longer needed */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        /* Custom CSS to prevent autofill styles */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover, 
+        input:-webkit-autofill:focus, 
+        textarea:-webkit-autofill,
+        textarea:-webkit-autofill:hover,
+        textarea:-webkit-autofill:focus,
+        select:-webkit-autofill,
+        select:-webkit-autofill:hover,
+        select:-webkit-autofill:focus {
+        /* This creates an inset box-shadow to override the autofill background */
+        -webkit-box-shadow: 0 0 0px 1000px #222222 inset;
+        /* This sets the text color to white */
+        -webkit-text-fill-color: #FFFFFF; 
+        /* Ensures a smooth transition if you start typing */
+        transition: background-color 5000s ease-in-out 0s;
         }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-900 flex">
+<body class="text-gray-400">
 
-    <aside class="w-64 bg-gray-800 text-white shadow-lg p-6 flex flex-col fixed top-0 left-0 h-screen">
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-indigo-400">C-Zero</h1>
+    <header class="fixed top-0 left-0 right-0 bg-[#171717] border-b border-[#2c2c2c] h-12 flex items-center justify-between z-40">
+        <div class="flex items-center space-x-4 ml-2">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-indigo-500 rounded-md flex items-center justify-center font-bold text-white text-sm">C</div>
+                <span class="font-semibold text-white text-sm">C-Zero Sdn Bhd</span>
+                <span class="bg-gray-700 text-xs font-bold text-indigo-400 px-2 py-1 rounded-full">Free</span>
+            </div>
+            <i class="fas fa-chevron-right text-gray-600"></i>
+            <div class="flex items-center space-x-2">
+                <span class="text-xs text-white">ainmrh-dev's Project</span>
+            </div>
+            <div class="flex items-center space-x-2 bg-gray-900 border border-[#2c2c2c] rounded-md p-1">
+                <button class="px-2 py-0.5 text-xs rounded-md hover:bg-gray-700 text-white">main</button>
+                <button class="px-2 py-0.5 text-xs rounded-md bg-yellow-500 text-black font-semibold">Production</button>
+            </div>
+            <button class="bg-green-500 text-white font-semibold px-4 py-1 rounded-md hover:bg-green-600 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 mr-1 inline">
+                    <path d="M12.232 4.232a2.5 2.5 0 0 1 3.536 3.536l-1.225 1.224a.75.75 0 0 0 1.061 1.06l1.224-1.224a4 4 0 0 0-5.656-5.656l-3 3a4 4 0 0 0 .225 5.865.75.75 0 0 0 .977-1.138 2.5 2.5 0 0 1-.142-3.665l3-3Z" />
+                    <path d="M8.603 3.799a4.49 4.49 0 0 1 5.865-.224l.224.224a.75.75 0 0 0 1.138-.977 6 6 0 0 0-8.217-8.217l-3 3a6 6 0 0 0 8.217 8.217H12.23l.224-.224a4.49 4.49 0 0 1-.224-5.865Z" />
+                </svg>
+                <span class="text-sm">Connect</span>
+            </button>
         </div>
-
-        <nav class="flex-grow space-y-2 text-sm">
+        <div class="flex items-center space-x-4 mr-2">
+            <button class="text-xs hover:bg-gray-800 px-3 py-1.5 rounded-md">Feedback</button>
+            <button class="hover:bg-gray-800 w-8 h-8 rounded-md flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
+                </svg>
+            </button>
+            <button class="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center font-bold text-white text-sm border-2 border-pink-300">A</button>
+        </div>
+    </header>
+    
+    <aside class="group fixed top-12 left-0 h-[calc(100vh-3rem)] z-30 flex flex-col justify-between p-2
+                 bg-[#171717] border-r border-[#2c2c2c]
+                 w-12 hover:w-64 transition-all duration-300 ease-in-out">
+    
+        <nav class="flex flex-col space-y-3 mt-2">
             {% if request.user.role == '1' %}
-                <!-- Admin links -->
-                <a class="sidebar-link flex items-center p-3 rounded-lg hover:bg-gray-700 transition-colors duration-200 {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}" href="{% url 'admin_dashboard' %}">
-                    <i class="fas fa-chart-pie w-5 h-5 mr-3"></i> C-Zero Task Dashboard
+                <a href="{% url 'admin_dashboard' %}" class="flex items-center h-8 px-1 rounded-lg transition-colors duration-200 {% if request.resolver_match.url_name == 'admin_dashboard' %}bg-zinc-800 text-white{% else %}text-gray-400 hover:bg-zinc-900 hover:text-white{% endif %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z" /></svg>
+                    <span class="ml-4 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Task List</span>
                 </a>
-
-                <a class="sidebar-link flex items-center p-3 rounded-lg hover:bg-gray-700 transition-colors duration-200 {% if request.resolver_match.url_name == 'installer_list' %}active{% endif %}" href="{% url 'installer_list' %}">
-                    <i class="fas fa-icons w-5 h-5 mr-3"></i> Installer List
+                <a href="{% url 'installer_list' %}" class="flex items-center h-8 px-1 rounded-lg transition-colors duration-200 {% if request.resolver_match.url_name == 'installer_list' %}bg-zinc-800 text-white{% else %}text-gray-400 hover:bg-zinc-900 hover:text-white{% endif %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" /></svg>
+                    <span class="ml-4 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Installer List</span>
                 </a>
-
-                <a class="sidebar-link flex items-center p-3 rounded-lg hover:bg-gray-700 transition-colors duration-200 {% if request.resolver_match.url_name == 'create_installation' %}active{% endif %}" href="{% url 'create_installation' %}">
-                    <i class="fas fa-table w-5 h-5 mr-3"></i> Register Installation
+                <a href="{% url 'create_installation' %}" class="flex items-center h-8 px-1 rounded-lg transition-colors duration-200 {% if request.resolver_match.url_name == 'create_installation' %}bg-zinc-800 text-white{% else %}text-gray-400 hover:bg-zinc-900 hover:text-white{% endif %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375" /></svg>
+                    <span class="ml-4 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Create Installation</span>
                 </a>
-
-                <a class="sidebar-link flex items-center p-3 rounded-lg hover:bg-gray-700 transition-colors duration-200 {% if request.resolver_match.url_name == 'installation_list' %}active{% endif %}" href="{% url 'installation_list' %}">
-                    <i class="fas fa-list w-5 h-5 mr-3"></i> Installation List
+                <a href="{% url 'installation_list' %}" class="flex items-center h-8 px-1 rounded-lg transition-colors duration-200 {% if request.resolver_match.url_name == 'installation_list' %}bg-zinc-800 text-white{% else %}text-gray-400 hover:bg-zinc-900 hover:text-white{% endif %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9.75h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5m-16.5-13.5h16.5" /></svg>
+                    <span class="ml-4 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Installation List</span>
                 </a>
-
-                <!-- New Upload File link -->
-                <a class="sidebar-link flex items-center p-3 rounded-lg hover:bg-gray-700 transition-colors duration-200 {% if request.resolver_match.url_name == 'upload_file' %}active{% endif %}" href="{% url 'upload_file' %}">
-                    <i class="fas fa-upload w-5 h-5 mr-3"></i> Upload Files
+                <a href="{% url 'upload_file' %}" class="flex items-center h-8 px-1 rounded-lg transition-colors duration-200 {% if request.resolver_match.url_name == 'upload_file' %}bg-zinc-800 text-white{% else %}text-gray-400 hover:bg-zinc-900 hover:text-white{% endif %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" /></svg>
+                    <span class="ml-4 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Upload Test</span>
                 </a>
             {% elif request.user.role == '2' %}
-                <!-- Installer links -->
-                <a class="sidebar-link flex items-center p-3 rounded-lg hover:bg-gray-700 transition-colors duration-200 {% if request.resolver_match.url_name == 'installer_dashboard' %}active{% endif %}" href="{% url 'installer_dashboard' %}">
-                    <i class="fas fa-tools w-5 h-5 mr-3"></i> Installer Dashboard
+                <a href="{% url 'installer_dashboard' %}" class="flex items-center h-8 px-1 rounded-lg transition-colors duration-200 {% if request.resolver_match.url_name == 'installer_dashboard' %}bg-zinc-800 text-white{% else %}text-gray-400 hover:bg-zinc-900 hover:text-white{% endif %}">
+                    <i class="fas fa-tools w-6 h-6 shrink-0 flex items-center justify-center"></i>
+                    <span class="ml-4 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Installer Dashboard</span>
                 </a>
-                <a class="sidebar-link flex items-center p-3 rounded-lg hover:bg-gray-700 transition-colors duration-200 {% if request.resolver_match.url_name == 'company_profile' %}active{% endif %}" href="{% url 'company_profile' %}">
-                    <i class="fas fa-building w-5 h-5 mr-3"></i> Company Profile
+                <a href="{% url 'company_profile' %}" class="flex items-center h-8 px-1 rounded-lg transition-colors duration-200 {% if request.resolver_match.url_name == 'company_profile' %}bg-zinc-800 text-white{% else %}text-gray-400 hover:bg-zinc-900 hover:text-white{% endif %}">
+                    <i class="fas fa-building w-6 h-6 shrink-0 flex items-center justify-center"></i>
+                    <span class="ml-4 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Company Profile</span>
                 </a>
             {% endif %}
         </nav>
 
-        <div class="mt-8 pt-4 border-t border-gray-700">
-            <h3 class="text-xs font-semibold uppercase text-gray-500 mb-3">Links</h3>
-            <a class="sidebar-link flex items-center p-3 rounded-lg hover:bg-gray-700 transition-colors duration-200 text-gray-300" href="#">
-                <i class="fas fa-code w-5 h-5 mr-3"></i> Source Code
-            </a>
-            <a class="sidebar-link flex items-center p-3 rounded-lg hover:bg-gray-700 transition-colors duration-200 text-gray-300" href="#">
-                <i class="fas fa-external-link-alt w-5 h-5 mr-3"></i> More Django Apps
-            </a>
-            <a class="sidebar-link flex items-center p-3 rounded-lg hover:bg-red-700 transition-colors duration-200 mt-4" href="{% url 'logout' %}">
-                <i class="fas fa-sign-out-alt w-5 h-5 mr-3"></i> Logout
+        <div class="flex flex-col space-y-1">
+            <a href="{% url 'logout' %}" class="flex items-center h-11 px-1 rounded-xl text-gray-400 hover:bg-red-900/50 hover:text-red-400 transition-colors duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" /></svg>
+                <span class="ml-4 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Logout</span>
             </a>
         </div>
     </aside>
 
-    <main class="flex-1 bg-gray-900 p-8">
-        <header class="bg-gray-800 h-16 rounded-md shadow-md flex items-center justify-between px-6 mb-8">
-            <div class="text-white text-lg font-semibold">Dashboard</div>
-            <div class="flex items-center space-x-4">
-                <div class="relative">
-                    <input type="text" placeholder="Search" class="p-2 pl-10 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm">
-                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                </div>
-            </div>
-        </header>
-
+    <main class="ml-16 mt-12 p-8 ">
         {% block content %}
         {% endblock %}
     </main>
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
 </body>
 </html>

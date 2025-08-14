@@ -1,0 +1,16 @@
+<!-- accounts/templates/accounts/response_success.html -->
+{% extends 'base.html' %}
+
+{% block title %}Action Successful{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gray-900">
+    <div class="bg-gray-800 p-8 rounded-lg shadow-2xl text-center text-white">
+        <h2 class="text-3xl font-bold mb-4">Success! 🎉</h2>
+        <p class="text-lg mb-6">{{ message }}</p>
+        <a href="{% url 'accounts:installation_list' %}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
+            Return to Installations
+        </a>
+    </div>
+</div>
+{% endblock %}

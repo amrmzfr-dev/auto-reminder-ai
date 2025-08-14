@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings  # For referencing CustomUser
 from ..models import InstallerProfile  # Replace with the actual path to your InstallerProfile model
 from django.utils import timezone
+from ..models import CustomUser
 
 # ----------------------------
 # Customer
@@ -77,42 +78,99 @@ class ChargerModel(models.Model):
 # ----------------------------
 # Installation
 # ----------------------------
+
 class Installation(models.Model):
+    """
+    The central entity representing a single installation job.
+    It acts as a state machine, tracking the job's entire lifecycle
+    through the 'status' field.
+    """
     STATUS_CHOICES = [
-        ('Scheduled', 'Scheduled'),
-        ('In Progress', 'In Progress'),
-        ('Completed', 'Completed'),
-        ('Cancelled', 'Cancelled'),
-        ('On Hold', 'On Hold'),
+        ('SUBMITTED', 'Submitted'),
+        ('PENDING_ACCEPTANCE', 'Pending Acceptance'),
+        ('ACCEPTED', 'Accepted'),
+        ('REJECTED', 'Rejected'),
+        ('IN_PROGRESS', 'In Progress'),
+        ('COMPLETED', 'Completed'),
+        ('EXPIRED', 'Expired'),
     ]
 
     installation_id = models.CharField(
-        max_length=50, unique=True, editable=False
+        max_length=50, unique=True, editable=False,
+        help_text="Unique identifier for the installation job."
     )
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='installations')
-    charger_model = models.ForeignKey(ChargerModel, on_delete=models.PROTECT, related_name='installations')
-
-    installer = models.ForeignKey(
-        InstallerProfile,
+    customer = models.ForeignKey(
+        Customer,
+        on_delete=models.CASCADE,
+        related_name='installations',
+        help_text="The customer associated with this installation."
+    )
+    charger_model = models.ForeignKey(
+        ChargerModel,
+        on_delete=models.PROTECT,
+        related_name='installations',
+        help_text="The charger model to be installed."
+    )
+    assigned_installer = models.ForeignKey(
+        CustomUser, # Link to your InstallerProfile model
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name='assigned_installations'
+        related_name='assigned_installations_directly',
+        help_text="The CustomUser id to bind directly for notifications."
+    )
+    installer = models.ForeignKey(
+        InstallerProfile, # Link to your InstallerProfile model
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='assigned_installations',
+        help_text="The installer assigned to this job. Can be null if unassigned."
     )
 
-    installation_created_date = models.DateField(null=True, blank=True)  # allow blank/null
+    installation_created_date = models.DateField(
+        null=True,
+        blank=True,
+        help_text="The date when the installation job was originally created."
+    )
 
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Scheduled')
-    notes = models.TextField(blank=True, null=True)
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='SUBMITTED', # Set default to 'SUBMITTED' as per documentation
+        help_text="The current status of the installation job."
+    )
+    notes = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Any additional notes or comments for the installation."
+    )
 
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        help_text="Timestamp when the record was first created."
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        help_text="Timestamp of the last update to the record."
+    )
+    assignment_expires_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="Crucial Field. Timestamp for when the installer's offer to accept expires. Null if not pending."
+    )
 
     def save(self, *args, **kwargs):
+        """
+        Overrides the save method to generate installation_id based on customer's
+        state and house_type, and set the creation date if not provided.
+        """
         if not self.installation_id:
+            # Generate installation_id based on customer's state and house_type
             state_code = self.customer.state[:2].upper()  # e.g., Selangor → 'SE'
             type_code = self.customer.house_type.upper()  # 'L' or 'H'
 
+            # Count existing installations to get a sequential number
             count = Installation.objects.filter(
                 customer__state=self.customer.state,
                 customer__house_type=self.customer.house_type
@@ -127,7 +185,10 @@ class Installation(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"Installation {self.installation_id} for {self.customer.name} ({self.status})"
+        """
+        Returns a string representation of the installation job.
+        """
+        return f"Installation {self.installation_id} for {self.customer.name} ({self.get_status_display()})"
 
 # ----------------------------
 # ServiceLog
