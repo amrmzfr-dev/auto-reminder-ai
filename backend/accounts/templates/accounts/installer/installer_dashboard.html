@@ -1,93 +1,140 @@
 {% extends 'base.html' %}
-
-{% block title %}Installer Dashboard - AutoReminder{% endblock %}
-
 {% block content %}
-<div class="min-h-screen bg-[#171717] text-gray-400 p-8">
-    {% load custom_filters %}
-{% if messages %}
-        <div class="space-y-2 mb-4">
-          {% for message in messages %}
-            <div class="rounded-lg p-4 text-sm {% if message.tags == 'warning' %}bg-yellow-100 text-yellow-900 border border-yellow-300{% elif message.tags == 'error' %}bg-red-100 text-red-900 border border-red-300{% endif %}">
-              {{ message }}
-            </div>
-          {% endfor %}
-        </div>
-      {% endif %}
+{% load custom_filters %}
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        <div class="bg-[#1f1f1f] p-6 rounded-xl shadow-sm border border-[#2c2c2c]">
-            <h3 class="text-sm text-white font-semibold mb-1">Total Tasks</h3>
-            <p class="text-3xl font-bold text-white">{{ total_tasks }}</p>
-            <p class="text-xs text-green-600 mt-1">+1% Since last month</p>
-        </div>
+<div class="flex min-h-screen bg-[#171717] text-[#c0c0c0] ">
+    <aside class="w-72 flex-shrink-0 bg-[#171717] p-4 border-r border-[#292929]">
+        <div class="flex flex-col h-full">
+            <h1 class="text-lg font-semibold mb-4 text-white">Job Management</h1>
 
-        <div class="bg-[#1f1f1f] p-6 rounded-xl shadow-sm border border-[#2c2c2c]">
-            <h3 class="text-sm text-white font-semibold mb-1">In Progress</h3>
-            <p class="text-3xl font-bold text-white">{{ in_progress }}</p>
-            <p class="text-xs text-blue-600 mt-1">Active Ongoing task execution</p>
+            <form method="get" action="">
+                <div class="relative mb-6">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                        <svg class="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                             stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </span>
+                    <input type="text" name="q" value="{{ request.GET.q }}" placeholder="Search"
+                           class="w-full py-2 pl-10 pr-4 text-sm text-white bg-[#171717] border border-[#292929] rounded-md focus:outline-none focus:border-[#292929]"/>
+                </div>
+            </form>
         </div>
+    </aside>
 
-        <div class="bg-[#1f1f1f] p-6 rounded-xl shadow-sm border border-[#2c2c2c]">
-            <h3 class="text-sm text-white font-semibold mb-1">Pending Tasks</h3>
-            <p class="text-3xl font-bold text-white">{{ pending }}</p>
-            <p class="text-xs text-yellow-600 mt-1">Awaiting action</p>
-        </div>
+    <main class="flex-1 p-6">
+            <div class="max-w-8xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
 
-        <div class="bg-[#1f1f1f] p-6 rounded-xl shadow-sm border border-[#2c2c2c]">
-            <h3 class="text-sm text-white font-semibold mb-1">Completion Rate</h3>
-            <p class="text-3xl font-bold text-white">{{ completion_rate }}%</p>
-            <p class="text-xs text-red-600 mt-1">{{ completion_rate }}% Since last update</p>
-        </div>
-    </div>
-    <h2 class="text-xl font-lightbold text-gray-100 mb-6">Installation Job List</h2>
-    <div class="overflow-x-auto mt-6">
-            <table class="min-w-full text-sm bg-[#1f1f1f] text-white rounded-lg shadow-sm border border-[#2c2c2c]">
-                <thead class="bg-[#1f1f1f]">
-                    <tr>
-                        <th class="px-4 py-3 text-center font-medium rounded-tl-md">Installation ID</th>
-                        <th class="px-4 py-3 text-center font-medium">Customer</th>
-                        <th class="px-4 py-3 text-center font-medium">Location</th>
-                        <th class="px-4 py-3 text-center font-medium">Charger Model</th>
-                        <th class="px-4 py-3 text-center font-medium">Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for installation in installations %}
-                    {# Make the entire row clickable #}
-                    <tr class="hover:bg-gray-600 transition duration-150 border-t border-[#2c2c2c] cursor-pointer"
+                    <!-- Total Tasks -->
+                    <div class="bg-[#1f1f1f] p-6 rounded-md shadow-sm border border-[#2c2c2c]">
+                        <div class="flex items-center mb-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#EDEDED] mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 12h18M3 17h18" />
+                            </svg>
+                            <h3 class="text-lg text-[#EDEDED] font-semibold">Total Tasks</h3>
+                        </div>
+                        <p class="text-2xl font-semibold text-[#EDEDED]">{{ total_tasks }}</p>
+                        <p class="text-xs text-[#EDEDED] mt-1">+1% Since last month</p>
+                    </div>
+
+                    <!-- In Progress -->
+                    <div class="bg-[#1f1f1f] p-6 rounded-md shadow-sm border border-[#2c2c2c]">
+                        <div class="flex items-center mb-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#EDEDED] mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2" />
+                            </svg>
+                            <h3 class="text-lg text-[#EDEDED] font-semibold">Pending Tasks</h3>
+                        </div>
+                        <p class="text-2xl font-semibold text-[#EDEDED]">{{ pending }}</p>
+                        <p class="text-xs text-[#EDEDED] mt-1">Active Ongoing task execution</p>
+                    </div>
+
+                    <!-- Pending Tasks -->
+                    <div class="bg-[#1f1f1f] p-6 rounded-md shadow-sm border border-[#2c2c2c]">
+                        <div class="flex items-center mb-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#EDEDED] mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12A9 9 0 113 12a9 9 0 0118 0z" />
+                            </svg>
+                            <h3 class="text-lg text-[#EDEDED] font-semibold">Completed</h3>
+                        </div>
+                        <p class="text-2xl font-semibold text-[#EDEDED]">{{ completed }}</p>
+                        <p class="text-xs text-[#EDEDED] mt-1">Awaiting action</p>
+                    </div>
+
+                    <!-- Completion Rate -->
+                    <div class="bg-[#1f1f1f] p-6 rounded-md shadow-sm border border-[#2c2c2c]">
+                        <div class="flex items-center mb-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#EDEDED] mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
+                            </svg>
+                            <h3 class="text-lg text-[#EDEDED] font-semibold">Completion Rate</h3>
+                        </div>
+                        <p class="text-2xl font-semibold text-[#EDEDED]">{{ completion_rate }}%</p>
+                        <p class="text-xs text-[#EDEDED] mt-1">{{ completion_rate }}% Since last update</p>
+                    </div>
+
+                </div>
+
+            <h2 class="text-lg font-semibold text-[#c0c0c0] mb-6">Installation Job List</h2>
+            <div class="overflow-x-auto">
+                <div class="max-h-[800px] overflow-y-auto hide-scrollbar border border-[#292929] rounded-md shadow-sm">
+                    <table class="min-w-full text-xs bg-[#1f1f1f] text-white">
+                        <thead class="sticky top-0 bg-[#1f1f1f] z-10 border-b border-[#292929]">
+                            <tr>
+                                <th class="px-4 py-3 text-center text-xs font-medium rounded-tl-md">Installation ID</th>
+                                <th class="px-4 py-3 text-center text-xs font-medium">Customer</th>
+                                <th class="px-4 py-3 text-center text-xs font-medium">Location</th>
+                                <th class="px-4 py-3 text-center text-xs font-medium">Charger Model</th>
+                                <th class="px-4 py-3 text-center text-xs font-medium">Installer</th>
+                                <th class="px-4 py-3 text-center text-xs font-medium rounded-tr-md">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for installation in installations %}
+                            <tr class="hover:bg-[#2c2c2c] transition duration-150 border-t border-[#292929] cursor-pointer"
                         onclick="window.location.href = '{% url 'installation_detail' installation.installation_id %}';">
-                        <td class="px-4 py-3 text-center text-[#c0c0c0]">{{ installation.installation_id }}</td>
-                        <td class="px-4 py-3 text-center text-[#c0c0c0]">{{ installation.customer.name }}</td>
-                        <td class="px-4 py-3 text-center text-[#c0c0c0]">{{ installation.customer.city }}, {{ installation.customer.state }}</td>
-                        <td class="px-4 py-3 text-center text-[#c0c0c0]">{{ installation.charger_model.model_name }}</td>
-                        <td class="px-4 py-3 text-center">
-                                {% if installation.status == 'COMPLETED' %} {# Updated status values #}
-                                <span class="inline-block px-3 py-1 text-xs font-semibold text-green-100 bg-green-600 rounded-full">Completed</span>
-                                {% elif installation.status == 'IN_PROGRESS' %} {# Updated status values #}
-                                <span class="inline-block px-3 py-1 text-xs font-semibold text-yellow-100 bg-yellow-600 rounded-full">In Progress</span>
-                                {% elif installation.status == 'SUBMITTED' %} {# Updated status values #}
-                                <span class="inline-block px-3 py-1 text-xs font-semibold text-gray-100 bg-gray-500 rounded-full">Submitted</span>
-                                {% elif installation.status == 'PENDING_ACCEPTANCE' %} {# Added new status #}
-                                <span class="inline-block px-3 py-1 text-xs font-semibold text-blue-100 bg-blue-600 rounded-full">Pending Acceptance</span>
-                                {% elif installation.status == 'ACCEPTED' %} {# Added new status #}
-                                <span class="inline-block px-3 py-1 text-xs font-semibold text-purple-100 bg-purple-600 rounded-full">Accepted</span>
-                                {% elif installation.status == 'REJECTED' %} {# Added new status #}
-                                <span class="inline-block px-3 py-1 text-xs font-semibold text-red-100 bg-red-600 rounded-full">Rejected</span>
-                                {% elif installation.status == 'EXPIRED' %} {# Added new status #}
-                                <span class="inline-block px-3 py-1 text-xs font-semibold text-red-100 bg-red-800 rounded-full">Expired</span>
-                                {% else %}
-                                <span class="inline-block px-3 py-1 text-xs font-semibold text-red-100 bg-red-600 rounded-full">{{ installation.get_status_display }}</span> {# Use get_status_display #}
-                                {% endif %}
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="5" class="px-4 py-6 text-center text-gray-300">No installations assigned to you.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                                <td class="px-4 py-3 text-center text-xs">{{ installation.installation_id }}</td>
+                                <td class="px-4 py-3 text-center text-xs">{{ installation.customer.name }}</td>
+                                <td class="px-4 py-3 text-center text-xs">{{ installation.customer.city }}, {{ installation.customer.state }}</td>
+                                <td class="px-4 py-3 text-center text-xs">{{ installation.charger_model.model_name }}</td>
+                                <td class="px-4 py-3 text-center text-xs">{{ installation.installer|default:"-" }}</td>
+                                <td class="px-4 py-3 text-center text-xs">
+                                    {% if installation.status == 'COMPLETED' %}
+                                    <span class="inline-block px-3 py-1 text-xs font-semibold text-green-100 bg-[#006239] rounded-full">Completed</span>
+                                    {% elif installation.status == 'IN_PROGRESS' %}
+                                    <span class="inline-block px-3 py-1 text-xs font-semibold text-yellow-100 bg-yellow-600 rounded-full">In Progress</span>
+                                    {% elif installation.status == 'SCHEDULED' %}
+                                    <span class="inline-block px-3 py-1 text-xs font-semibold text-gray-100 bg-gray-500 rounded-full">Scheduled</span>
+                                    {% elif installation.status == 'ON_HOLD' %}
+                                    <span class="inline-block px-3 py-1 text-xs font-semibold text-orange-100 bg-orange-600 rounded-full">On Hold</span>
+                                    {% elif installation.status == 'SUBMITTED' %}
+                                    <span class="inline-block px-3 py-1 text-xs font-semibold text-indigo-100 bg-indigo-600 rounded-full">Submitted</span>
+                                    {% elif installation.status == 'PENDING_ACCEPTANCE' %}
+                                    <span class="inline-block px-3 py-1 text-xs font-semibold text-purple-100 bg-purple-600 rounded-full">Pending Acceptance</span>
+                                    {% elif installation.status == 'ACCEPTED' %}
+                                    <span class="inline-block px-3 py-1 text-xs font-semibold text-teal-100 bg-teal-600 rounded-full">Accepted</span>
+                                    {% elif installation.status == 'REJECTED' %}
+                                    <span class="inline-block px-3 py-1 text-xs font-semibold text-red-100 bg-red-600 rounded-full">Rejected</span>
+                                    {% elif installation.status == 'EXPIRED' %}
+                                    <span class="inline-block px-3 py-1 text-xs font-semibold text-zinc-100 bg-zinc-600 rounded-full">Expired</span>
+                                    {% else %}
+                                    <span class="inline-block px-3 py-1 text-xs font-semibold text-red-100 bg-red-600 rounded-full">{{ installation.status }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="8" class="px-4 py-6 text-center text-xs text-[#c0c0c0]">No installations found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
+    </main>
 </div>
 {% endblock %}

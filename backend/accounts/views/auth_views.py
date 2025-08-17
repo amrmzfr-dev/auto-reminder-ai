@@ -37,7 +37,7 @@ def login_view(request):
 
             # Redirect the user to the appropriate dashboard based on their role
             if hasattr(user, 'role') and user.role == '1':  # Admin role
-                return redirect('admin_dashboard')
+                return redirect('installation_list')
             elif hasattr(user, 'role') and user.role == '2':  # Installer role
                 return redirect('installer_dashboard')
             else:

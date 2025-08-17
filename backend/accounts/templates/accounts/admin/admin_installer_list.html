@@ -1,111 +1,113 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="min-h-screen bg-[#171717] text-[#c0c0c0]">
+<div class="ml-16 mt-12 p-8">
+  <div class="min-h-screen bg-[#171717] text-[#c0c0c0]">
     <div class="max-w-8xl mx-auto">
-        <h2 class="text-2xl font-semibold text-gray-100 mb-6">Installer List</h2>
+      <h2 class="text-2xl font-semibold text-gray-100 mb-6">Installer List</h2>
 
-        <div class="overflow-x-auto">
-            <table class="min-w-full text-xs bg-[#1f1f1f] text-white rounded-md shadow-sm">
-                <thead class="bg-[#1f1f1f]">
-                    <tr>
-                        <th class="px-4 py-3 text-center font-medium rounded-tl-md">#</th>
-                        <th class="px-4 py-3 text-center font-medium">Company</th>
-                        <th class="px-4 py-3 text-center font-medium">State</th>
-                        <th class="px-4 py-3 text-center font-medium">SSM Number</th>
-                        <th class="px-4 py-3 text-center font-medium">EPF Contributors</th>
-                        <th class="px-4 py-3 text-center font-medium">ST</th>
-                        <th class="px-4 py-3 text-center font-medium">License Class</th>
-                        <th class="px-4 py-3 text-center font-medium">CIDB</th>
-                        <th class="px-4 py-3 text-center font-medium">CIDB Category</th>
-                        <th class="px-4 py-3 text-center font-medium">CIDB Grade</th>
-                        <th class="px-4 py-3 text-center font-medium">SST</th>
-                        <th class="px-4 py-3 text-center font-medium">SST Number</th>
-                        <th class="px-4 py-3 text-center font-medium">Insurance</th>
-                        <th class="px-4 py-3 text-center font-medium">COI History</th>
-                        <th class="px-4 py-3 text-center font-medium">Date Joined</th>
-                        <th class="px-4 py-3 text-center font-medium rounded-tr-md">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for installer in installers %}
-                    <tr class="hover:bg-[#2c2c2c] transition duration-150 border-t border-[#2c2c2c]">
-                        <td class="px-4 py-3 text-center max-h-16 overflow-y-auto"> {{ forloop.counter }} </td>
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-xs bg-[#1f1f1f] text-white rounded-md shadow-sm border border-[#292929]">
+          <thead class="bg-[#1f1f1f] font-inter">
+            <tr>
+              <th class="px-4 py-3 text-center font-medium rounded-tl-md">#</th>
+              <th class="px-4 py-3 text-center font-medium">Company</th>
+              <th class="px-4 py-3 text-center font-medium">State</th>
+              <th class="px-4 py-3 text-center font-medium">SSM Number</th>
+              <th class="px-4 py-3 text-center font-medium">EPF Contributors</th>
+              <th class="px-4 py-3 text-center font-medium">ST</th>
+              <th class="px-4 py-3 text-center font-medium">License Class</th>
+              <th class="px-4 py-3 text-center font-medium">CIDB</th>
+              <th class="px-4 py-3 text-center font-medium">CIDB Category</th>
+              <th class="px-4 py-3 text-center font-medium">CIDB Grade</th>
+              <th class="px-4 py-3 text-center font-medium">SST</th>
+              <th class="px-4 py-3 text-center font-medium">SST Number</th>
+              <th class="px-4 py-3 text-center font-medium">Insurance</th>
+              <th class="px-4 py-3 text-center font-medium">COI History</th>
+              <th class="px-4 py-3 text-center font-medium">Date Joined</th>
+              <th class="px-4 py-3 text-center font-medium rounded-tr-md">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for installer in installers %}
+            <tr class="hover:bg-[#2c2c2c] transition duration-150 border-t border-[#292929]">
+              <td class="px-4 py-3 text-center max-h-16 overflow-y-auto"> {{ forloop.counter }} </td>
 
-                        {% if installer.installerprofile %}
-                            <td class="px-4 py-3 text-center max-h-16 overflow-y-auto whitespace-normal scrollbar-thin">
-                                {{ installer.installerprofile.company_name|default:"-" }}
-                            </td>
-                            <td class="px-4 py-3 text-center max-h-16 overflow-y-auto whitespace-normal scrollbar-thin">
-                                {% if installer.installerprofile.operational_states.exists %}
-                                <div class="max-h-20 overflow-y-auto hide-scrollbar">
-                                    {% for state in installer.installerprofile.operational_states.all %}
-                                        {{ state }}<br>
-                                    {% endfor %}
-                                </div>
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                            <td class="px-4 py-3 text-center max-h-16 overflow-y-auto whitespace-normal scrollbar-thin">
-                                {{ installer.installerprofile.company_ssm_number|default:"-" }}
-                            </td>
-                            <td class="px-4 py-3 text-center max-h-16 overflow-y-auto whitespace-normal scrollbar-thin">
-                                {{ installer.installerprofile.epf_contributors|default:"-" }}
-                            </td>
-                            <td class="px-4 py-3 text-center max-h-16 overflow-y-auto">
-                                {% if installer.installerprofile.is_st_registered %}✅{% else %}❌{% endif %}
-                            </td>
-                            <td class="px-4 py-3 text-center max-h-16 overflow-y-auto whitespace-normal scrollbar-thin">
-                                {{ installer.installerprofile.license_class|default:"-" }}
-                            </td>
-                            <td class="px-4 py-3 text-center max-h-16 overflow-y-auto">
-                                {% if installer.installerprofile.is_cidb_registered %}✅{% else %}❌{% endif %}
-                            </td>
-                            <td class="px-4 py-3 text-center max-h-16 overflow-y-auto whitespace-normal scrollbar-thin">
-                                {{ installer.installerprofile.cidb_category|default:"-" }}
-                            </td>
-                            <td class="px-4 py-3 text-center max-h-16 overflow-y-auto whitespace-normal scrollbar-thin">
-                                {{ installer.installerprofile.cidb_grade|default:"-" }}
-                            </td>
-                            <td class="px-4 py-3 text-center max-h-16 overflow-y-auto">
-                                {% if installer.installerprofile.is_sst_registered %}✅{% else %}❌{% endif %}
-                            </td>
-                            <td class="px-4 py-3 text-center max-h-16 overflow-y-auto whitespace-normal scrollbar-thin">
-                                {{ installer.installerprofile.sst_number|default:"-" }}
-                            </td>
-                            <td class="px-4 py-3 text-center max-h-16 overflow-y-auto">
-                                {% if installer.installerprofile.plwc_has_insurance %}✅{% else %}❌{% endif %}
-                            </td>
-                            <td class="px-4 py-3 text-center max-h-16 overflow-y-auto">
-                                {% if installer.installerprofile.coi_history %}✅{% else %}❌{% endif %}
-                            </td>
-                            <td class="px-4 py-3 text-center max-h-16 overflow-y-auto whitespace-normal scrollbar-thin">
-                                {{ installer.date_joined|date:"Y-m-d H:i" }}
-                            </td>
-                            <td class="px-4 py-3 text-center max-h-16 overflow-y-auto">
-                                {% if installer.registration_status == 'approved' %}
-                                    <span class="inline-block px-3 py-1 text-sm font-semibold text-white bg-[#006239] rounded-full">Approved</span>
-                                {% elif installer.registration_status == 'submitted' %}
-                                    <span class="inline-block px-3 py-1 text-sm font-semibold text-[#c0c0c0] bg-[#292214] border border-[#292214] rounded-full">Submitted</span>
-                                {% elif installer.registration_status == 'rejected' %}
-                                    <span class="inline-block px-3 py-1 text-sm font-semibold text-[#c0c0c0] bg-[#292214] border border-[#292214] rounded-full">Rejected</span>
-                                {% else %}
-                                    <span class="inline-block px-3 py-1 text-sm font-semibold text-[#c0c0c0] bg-[#292214] border border-[#292214] rounded-full">Incomplete</span>
-                                {% endif %}
-                            </td>
-                        {% else %}
-                            <td colspan="16" class="px-4 py-3 text-center text-red-400">Missing Profile</td>
-                        {% endif %}
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="16" class="px-4 py-6 text-center text-gray-300">No installers found.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+              {% if installer.installerprofile %}
+              <td class="px-4 py-3 text-center max-h-16 overflow-y-auto whitespace-normal scrollbar-thin">
+                {{ installer.installerprofile.company_name|default:"-" }}
+              </td>
+              <td class="px-4 py-3 text-center max-h-16 overflow-y-auto whitespace-normal scrollbar-thin">
+                {% if installer.installerprofile.operational_states.exists %}
+                <div class="max-h-20 overflow-y-auto hide-scrollbar">
+                  {% for state in installer.installerprofile.operational_states.all %}
+                  {{ state }}<br>
+                  {% endfor %}
+                </div>
+                {% else %}
+                -
+                {% endif %}
+              </td>
+              <td class="px-4 py-3 text-center max-h-16 overflow-y-auto whitespace-normal scrollbar-thin">
+                {{ installer.installerprofile.company_ssm_number|default:"-" }}
+              </td>
+              <td class="px-4 py-3 text-center max-h-16 overflow-y-auto whitespace-normal scrollbar-thin">
+                {{ installer.installerprofile.epf_contributors|default:"-" }}
+              </td>
+              <td class="px-4 py-3 text-center max-h-16 overflow-y-auto">
+                {% if installer.installerprofile.is_st_registered %}✅{% else %}❌{% endif %}
+              </td>
+              <td class="px-4 py-3 text-center max-h-16 overflow-y-auto whitespace-normal scrollbar-thin">
+                {{ installer.installerprofile.license_class|default:"-" }}
+              </td>
+              <td class="px-4 py-3 text-center max-h-16 overflow-y-auto">
+                {% if installer.installerprofile.is_cidb_registered %}✅{% else %}❌{% endif %}
+              </td>
+              <td class="px-4 py-3 text-center max-h-16 overflow-y-auto whitespace-normal scrollbar-thin">
+                {{ installer.installerprofile.cidb_category|default:"-" }}
+              </td>
+              <td class="px-4 py-3 text-center max-h-16 overflow-y-auto whitespace-normal scrollbar-thin">
+                {{ installer.installerprofile.cidb_grade|default:"-" }}
+              </td>
+              <td class="px-4 py-3 text-center max-h-16 overflow-y-auto">
+                {% if installer.installerprofile.is_sst_registered %}✅{% else %}❌{% endif %}
+              </td>
+              <td class="px-4 py-3 text-center max-h-16 overflow-y-auto whitespace-normal scrollbar-thin">
+                {{ installer.installerprofile.sst_number|default:"-" }}
+              </td>
+              <td class="px-4 py-3 text-center max-h-16 overflow-y-auto">
+                {% if installer.installerprofile.plwc_has_insurance %}✅{% else %}❌{% endif %}
+              </td>
+              <td class="px-4 py-3 text-center max-h-16 overflow-y-auto">
+                {% if installer.installerprofile.coi_history %}✅{% else %}❌{% endif %}
+              </td>
+              <td class="px-4 py-3 text-center max-h-16 overflow-y-auto whitespace-normal scrollbar-thin">
+                {{ installer.date_joined|date:"Y-m-d H:i" }}
+              </td>
+              <td class="px-4 py-3 text-center max-h-16 overflow-y-auto">
+                {% if installer.registration_status == 'approved' %}
+                <span class="inline-block px-3 py-1 text-sm font-semibold text-white bg-[#006239] rounded-full">Approved</span>
+                {% elif installer.registration_status == 'submitted' %}
+                <span class="inline-block px-3 py-1 text-sm font-semibold text-[#c0c0c0] bg-[#292214] border border-[#292214] rounded-full">Submitted</span>
+                {% elif installer.registration_status == 'rejected' %}
+                <span class="inline-block px-3 py-1 text-sm font-semibold text-[#c0c0c0] bg-[#292214] border border-[#292214] rounded-full">Rejected</span>
+                {% else %}
+                <span class="inline-block px-3 py-1 text-sm font-semibold text-[#c0c0c0] bg-[#292214] border border-[#292214] rounded-full">Incomplete</span>
+                {% endif %}
+              </td>
+              {% else %}
+              <td colspan="16" class="px-4 py-3 text-center text-red-400">Missing Profile</td>
+              {% endif %}
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="16" class="px-4 py-6 text-center text-gray-300">No installers found.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
+  </div>
 </div>
 {% endblock %}

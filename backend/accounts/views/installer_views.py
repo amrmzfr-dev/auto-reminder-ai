@@ -57,9 +57,9 @@ def installer_dashboard_view(request):
 
     # Your KPI stats code here (optional)
     total_tasks = installations.count()
-    in_progress = installations.filter(status='In Progress').count()
-    pending = installations.filter(status='Scheduled').count()
-    completed = installations.filter(status='Completed').count()
+    in_progress = installations.filter(status='IN_PROGRESS').count()
+    pending = installations.filter(status='PENDING_ACCEPTANCE').count()
+    completed = installations.filter(status='COMPLETED').count()
     completion_rate = int((completed / total_tasks) * 100) if total_tasks > 0 else 0
 
     context = {

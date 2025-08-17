@@ -17,10 +17,10 @@
             font-family: "Inter", sans-serif;
             background-color: #171717;
         }
-        /* We will apply active styles directly with Tailwind, so this class is no longer needed */
+        
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        /* Custom CSS to prevent autofill styles */
+        
         input:-webkit-autofill,
         input:-webkit-autofill:hover, 
         input:-webkit-autofill:focus, 
@@ -30,18 +30,15 @@
         select:-webkit-autofill,
         select:-webkit-autofill:hover,
         select:-webkit-autofill:focus {
-        /* This creates an inset box-shadow to override the autofill background */
-        -webkit-box-shadow: 0 0 0px 1000px #222222 inset;
-        /* This sets the text color to white */
-        -webkit-text-fill-color: #FFFFFF; 
-        /* Ensures a smooth transition if you start typing */
-        transition: background-color 5000s ease-in-out 0s;
+            -webkit-box-shadow: 0 0 0px 1000px #222222 inset;
+            -webkit-text-fill-color: #FFFFFF; 
+            transition: background-color 5000s ease-in-out 0s;
         }
     </style>
 </head>
 <body class="text-gray-400">
 
-    <header class="fixed top-0 left-0 right-0 bg-[#171717] border-b border-[#2c2c2c] h-12 flex items-center justify-between z-40">
+    <header class="fixed top-0 left-0 right-0 bg-[#171717] border-b border-[#2c2c2c] h-12 flex items-center justify-between z-40 ">
         <div class="flex items-center space-x-4 ml-2">
             <div class="flex items-center space-x-2">
                 <div class="w-8 h-8 bg-indigo-500 rounded-md flex items-center justify-center font-bold text-white text-sm">C</div>
@@ -71,8 +68,59 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
                 </svg>
             </button>
-            <button class="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center font-bold text-white text-sm border-2 border-pink-300">A</button>
-        </div>
+            
+            <div class="relative">
+                <button id="profile-button" class="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center font-bold text-white text-sm border-2 border-pink-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                    A
+                </button>
+                
+                <div id="profile-menu" class="hidden absolute right-0 mt-2 w-64 bg-[#202020] border border-[#2c2c2c] rounded-lg shadow-lg z-50 text-sm">
+                    <div class="p-2">
+                        <div class="px-2 py-1">
+                            <p class="font-semibold text-white">amrmzfr-dev</p>
+                            <p class="text-xs text-gray-400">amr.mzfr.dev@outlook.com</p>
+                        </div>
+                        <hr class="border-t border-[#363636] my-2">
+                        <a href="#" class="flex items-center space-x-3 px-2 py-1.5 text-gray-300 rounded-md hover:bg-gray-700">
+                            <i class="fas fa-cog w-4 text-center"></i>
+                            <span>Account preferences</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-3 px-2 py-1.5 text-gray-300 rounded-md hover:bg-gray-700">
+                             <i class="fas fa-flask w-4 text-center"></i>
+                            <span>Feature previews</span>
+                        </a>
+                         <a href="#" class="flex items-center justify-between px-2 py-1.5 text-gray-300 rounded-md hover:bg-gray-700">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-terminal w-4 text-center"></i>
+                                <span>Command menu</span>
+                            </div>
+                            <span class="text-xs text-gray-500">⌘K</span>
+                        </a>
+                        <hr class="border-t border-[#363636] my-2">
+                        <div class="px-2 py-1 text-xs text-gray-500">Theme</div>
+                        <a href="#" class="flex items-center space-x-3 px-2 py-1.5 text-gray-300 rounded-md hover:bg-gray-700">
+                           <span>Dark</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-3 px-2 py-1.5 text-gray-300 rounded-md hover:bg-gray-700">
+                           <span>Light</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-3 px-2 py-1.5 text-gray-300 rounded-md hover:bg-gray-700">
+                           <span>Classic Dark</span>
+                        </a>
+                        <a href="#" class="flex items-center justify-between px-2 py-1.5 text-white rounded-md bg-gray-700">
+                           <div class="flex items-center space-x-3">
+                                <i class="fas fa-check w-4 text-center"></i>
+                                <span>System</span>
+                           </div>
+                        </a>
+                        <hr class="border-t border-[#363636] my-2">
+                        <a href="#" class="flex items-center space-x-3 px-2 py-1.5 text-gray-300 rounded-md hover:bg-gray-700">
+                           <span>Log out</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            </div>
     </header>
     
     <aside class="group fixed top-12 left-0 h-[calc(100vh-3rem)] z-30 flex flex-col justify-between p-2
@@ -121,10 +169,26 @@
         </div>
     </aside>
 
-    <main class="ml-16 mt-12 p-8 ">
+    <main class="ml-12 mt-12">
         {% block content %}
         {% endblock %}
     </main>
+    
+    <script>
+        const profileButton = document.getElementById('profile-button');
+        const profileMenu = document.getElementById('profile-menu');
 
+        // Toggle dropdown on button click
+        profileButton.addEventListener('click', () => {
+            profileMenu.classList.toggle('hidden');
+        });
+
+        // Close dropdown when clicking outside
+        window.addEventListener('click', (event) => {
+            if (!profileButton.contains(event.target) && !profileMenu.contains(event.target)) {
+                profileMenu.classList.add('hidden');
+            }
+        });
+    </script>
 </body>
 </html>

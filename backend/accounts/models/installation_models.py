@@ -37,7 +37,7 @@ class Customer(models.Model):
 
     name = models.CharField(max_length=200)
     contact_person = models.CharField(max_length=100, blank=True, null=True)
-    email = models.EmailField(unique=True)
+    email = models.EmailField(null=True, blank=True)
     phone_number = models.CharField(max_length=20, blank=True, null=True)
     address = models.TextField()
     city = models.CharField(max_length=100)

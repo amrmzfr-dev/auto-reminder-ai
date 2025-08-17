@@ -23,7 +23,7 @@ class ContractorRegisterForm(UserCreationForm):
         max_length=255,
         widget=forms.TextInput(attrs={
             # Tailwind CSS classes for styling the input field.
-            'class': 'w-full bg-gray-700 text-white rounded-md p-3 border border-gray-600',
+            'class': 'w-full bg-gray-700 text-white rounded-md p-3 border border-[#383838]',
             'placeholder': 'Company Name'
         })
     )
@@ -31,14 +31,14 @@ class ContractorRegisterForm(UserCreationForm):
     pic_name = forms.CharField(
         max_length=255,
         widget=forms.TextInput(attrs={
-            'class': 'w-full bg-gray-700 text-white rounded-md p-3 border border-gray-600',
+            'class': 'w-full bg-gray-700 text-white rounded-md p-3 border border-[#383838]',
             'placeholder': 'PIC Full Name'
         })
     )
     # Field for the PIC's email address, a required field.
     pic_email = forms.EmailField(
         widget=forms.EmailInput(attrs={
-            'class': 'w-full bg-gray-700 text-white rounded-md p-3 border border-gray-600',
+            'class': 'w-full bg-gray-700 text-white rounded-md p-3 border border-[#383838]',
             'placeholder': 'PIC Email'
         })
     )
@@ -46,7 +46,7 @@ class ContractorRegisterForm(UserCreationForm):
     pic_contact_number = forms.CharField(
         max_length=15,
         widget=forms.TextInput(attrs={
-            'class': 'w-full bg-gray-700 text-white rounded-md p-3 border border-gray-600',
+            'class': 'w-full bg-gray-700 text-white rounded-md p-3 border border-[#383838]',
             'placeholder': 'PIC Contact Number'
         })
     )
@@ -55,7 +55,7 @@ class ContractorRegisterForm(UserCreationForm):
         required=True,
         label="I agree to the terms and conditions",
         widget=forms.CheckboxInput(attrs={
-            'class': 'rounded border-gray-600 text-indigo-600 focus:ring-indigo-500'
+            'class': 'rounded border-[#383838] text-indigo-600 focus:ring-indigo-500'
         })
     )
 
@@ -63,7 +63,7 @@ class ContractorRegisterForm(UserCreationForm):
     password1 = forms.CharField(
         label="Password",
         widget=forms.PasswordInput(attrs={
-            'class': 'w-full bg-gray-700 text-white rounded-md p-3 border border-gray-600',
+            'class': 'w-full bg-gray-700 text-white rounded-md p-3 border border-[#383838]',
             'placeholder': 'Password'
         })
     )
@@ -71,7 +71,7 @@ class ContractorRegisterForm(UserCreationForm):
     password2 = forms.CharField(
         label="Confirm Password",
         widget=forms.PasswordInput(attrs={
-            'class': 'w-full bg-gray-700 text-white rounded-md p-3 border border-gray-600',
+            'class': 'w-full bg-gray-700 text-white rounded-md p-3 border border-[#383838]',
             'placeholder': 'Confirm Password'
         })
     )
@@ -86,7 +86,7 @@ class ContractorRegisterForm(UserCreationForm):
         # Customizes the widget for the username field with styling and a placeholder.
         widgets = {
             'username': forms.TextInput(attrs={
-                'class': 'w-full bg-gray-700 text-white rounded-md p-3 border border-gray-600',
+                'class': 'w-full bg-gray-700 text-white rounded-md p-3 border border-[#383838]',
                 'placeholder': 'Username'
             })
         }

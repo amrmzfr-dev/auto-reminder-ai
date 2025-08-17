@@ -1,6 +1,6 @@
 {% comment %} Renders a standard form field with a label, input, and errors. {% endcomment %}
 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-start">
-    <label for="{{ field.id_for_label }}" class="text-gray-300 font-medium sm:text-right sm:pt-3">{{ field.label }}</label>
+    <label for="{{ field.id_for_label }}" class="text-gray-300 font-medium text-sm sm:text-right sm:pt-3">{{ field.label }}</label>
     <div class="sm:col-span-2">
         {{ field }}
         {% for error in field.errors %}

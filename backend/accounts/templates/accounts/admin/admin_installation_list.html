@@ -1,55 +1,120 @@
 {% extends 'base.html' %}
 {% block content %}
+{% load custom_filters %}
 
-<div class="min-h-screen">
-    <div class="max-w-8xl mx-auto">
-        <h2 class="text-2xl font-semibold text-gray-100 mb-6">Installation Job List</h2>
+<div class="flex min-h-screen bg-[#171717] text-[#c0c0c0] ">
+    <aside class="w-72 flex-shrink-0 bg-[#171717] p-4 border-r border-[#292929]">
+        <div class="flex flex-col h-full">
+            <h1 class="text-lg font-semibold mb-4 text-white">Job Management</h1>
 
-            <div class="overflow-x-auto">
-                <table class="min-w-full text-sm bg-gray-700 text-white rounded-md shadow-sm">
-                    <thead class="bg-gray-800">
+            <a href="{% url 'create_installation' %}"
+            class="flex items-center text-sm justify-center w-full h-7 bg-[#006239] hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-md mb-4 transition duration-200">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                New Job
+            </a>
+
+            <form method="get" action="">
+                <div class="relative mb-6">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                        <svg class="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                             stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </span>
+                    <input type="text" name="q" value="{{ request.GET.q }}" placeholder="Search"
+                           class="w-full py-2 pl-10 pr-4 text-sm text-white bg-[#171717] border border-[#292929] rounded-md focus:outline-none focus:border-[#292929]"/>
+                </div>
+            </form>
+
+            <div class="flex flex-col text-sm text-[#c0c0c0]">
+                <table class="min-w-full text-sm bg-[#171717] text-white rounded-md shadow-sm border border-[#2c2c2c] mb-4">
+                    <thead class="bg-[#171717] text-[#c0c0c0] border-b border-[#2c2c2c]">
                         <tr>
-                            <th class="px-4 py-3 text-center font-medium rounded-tl-md">Installation ID</th>
-                            <th class="px-4 py-3 text-center font-medium">Customer</th>
-                            <th class="px-4 py-3 text-center font-medium">Location</th>
-                            <th class="px-4 py-3 text-center font-medium">Charger Model</th>
-                            <th class="px-4 py-3 text-center font-medium">Installer</th>
-                            <th class="px-4 py-3 text-center font-medium">Status</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium rounded-tl-md">Status</th>
+                            <th class="px-4 py-3 text-right text-sm font-medium rounded-tr-md">Count</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for installation in installations %}
-                        <tr class="hover:bg-gray-600 transition duration-150 border-t border-gray-600">
-                            <td class="px-4 py-3 text-center">{{ installation.installation_id }}</td>
-                            <td class="px-4 py-3 text-center">{{ installation.customer.name }}</td>
-                            <td class="px-4 py-3 text-center">{{ installation.customer.city }}, {{ installation.customer.state }}</td>
-                            <td class="px-4 py-3 text-center">{{ installation.charger_model.model_name }}</td>
-                            <td class="px-4 py-3 text-center">{{ installation.installer|default:"-" }}</td>
-                            <td class="px-4 py-3 text-center">
-                                {% if installation.status == 'Completed' %}
-                                    <span class="inline-block px-3 py-1 text-xs font-semibold text-green-100 bg-green-600 rounded-full">Completed</span>
-                                {% elif installation.status == 'In Progress' %}
-                                    <span class="inline-block px-3 py-1 text-xs font-semibold text-yellow-100 bg-yellow-600 rounded-full">In Progress</span>
-                                {% elif installation.status == 'Scheduled' %}
-                                    <span class="inline-block px-3 py-1 text-xs font-semibold text-gray-100 bg-gray-500 rounded-full">Scheduled</span>
-                                {% elif installation.status == 'On Hold' %}
-                                    <span class="inline-block px-3 py-1 text-xs font-semibold text-orange-100 bg-orange-600 rounded-full">On Hold</span>
-                                {% else %}
-                                    <span class="inline-block px-3 py-1 text-xs font-semibold text-red-100 bg-red-600 rounded-full">{{ installation.status }}</span>
-                                {% endif %}
-                            </td>
-                            {% comment %} <td class="px-4 py-3 text-center">
-                                <a href="{% url 'installation_detail' installation.id %}" class="text-blue-400 hover:underline">View</a>
-                            </td> {% endcomment %}
+                        <tr class="hover:bg-[#2c2c2c] transition duration-150 border-b border-[#2c2c2c]">
+                            <td class="px-4 py-2 text-xs font-medium">Total Installations:</td>
+                            <td class="px-4 py-2 text-right text-white text-xs font-bold">{{ total_installations }}</td>
                         </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="8" class="px-4 py-6 text-center text-gray-300">No installations found.</td>
+                        {% for status_key, status_label in STATUS_CHOICES %}
+                        <tr class="hover:bg-[#2c2c2c] transition duration-150 border-b last:border-b-0 border-[#2c2c2c]">
+                            <td class="px-4 py-2 text-xs">{{ status_label }}:</td>
+                            <td class="px-4 py-2 text-right text-white text-xs">{{ status_counts|get_item:status_key|default:0 }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
-    </div>
+        </div>
+    </aside>
+
+    <main class="flex-1 p-6">
+        <div class="max-w-8xl mx-auto">
+            <h2 class="text-lg font-semibold text-[#c0c0c0] mb-6">Installation Job List</h2>
+            <div class="overflow-x-auto">
+                <div class="max-h-[800px] overflow-y-auto hide-scrollbar border border-[#292929] rounded-md shadow-sm">
+                    <table class="min-w-full text-xs bg-[#1f1f1f] text-white">
+                        <thead class="sticky top-0 bg-[#1f1f1f] z-10 border-b border-[#292929]">
+                            <tr>
+                                <th class="px-4 py-3 text-center text-xs font-medium rounded-tl-md">Installation ID</th>
+                                <th class="px-4 py-3 text-center text-xs font-medium">Customer</th>
+                                <th class="px-4 py-3 text-center text-xs font-medium">Location</th>
+                                <th class="px-4 py-3 text-center text-xs font-medium">Charger Model</th>
+                                <th class="px-4 py-3 text-center text-xs font-medium">Installer</th>
+                                <th class="px-4 py-3 text-center text-xs font-medium rounded-tr-md">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for installation in installations %}
+                            <tr class="hover:bg-[#2c2c2c] transition duration-150 border-t border-[#292929]">
+                                <td class="px-4 py-3 text-center text-xs">{{ installation.installation_id }}</td>
+                                <td class="px-4 py-3 text-center text-xs">{{ installation.customer.name }}</td>
+                                <td class="px-4 py-3 text-center text-xs">{{ installation.customer.city }}, {{ installation.customer.state }}</td>
+                                <td class="px-4 py-3 text-center text-xs">{{ installation.charger_model.model_name }}</td>
+                                <td class="px-4 py-3 text-center text-xs">{{ installation.installer|default:"-" }}</td>
+                                <td class="px-4 py-3 text-center text-xs">
+                                    {% if installation.status == 'COMPLETED' %}
+                                    <span class="inline-block px-3 py-1 text-xs font-semibold text-green-100 bg-[#006239] rounded-full">Completed</span>
+                                    {% elif installation.status == 'IN_PROGRESS' %}
+                                    <span class="inline-block px-3 py-1 text-xs font-semibold text-yellow-100 bg-yellow-600 rounded-full">In Progress</span>
+                                    {% elif installation.status == 'SCHEDULED' %}
+                                    <span class="inline-block px-3 py-1 text-xs font-semibold text-gray-100 bg-gray-500 rounded-full">Scheduled</span>
+                                    {% elif installation.status == 'ON_HOLD' %}
+                                    <span class="inline-block px-3 py-1 text-xs font-semibold text-orange-100 bg-orange-600 rounded-full">On Hold</span>
+                                    {% elif installation.status == 'SUBMITTED' %}
+                                    <span class="inline-block px-3 py-1 text-xs font-semibold text-indigo-100 bg-indigo-600 rounded-full">Submitted</span>
+                                    {% elif installation.status == 'PENDING_ACCEPTANCE' %}
+                                    <span class="inline-block px-3 py-1 text-xs font-semibold text-purple-100 bg-purple-600 rounded-full">Pending Acceptance</span>
+                                    {% elif installation.status == 'ACCEPTED' %}
+                                    <span class="inline-block px-3 py-1 text-xs font-semibold text-teal-100 bg-teal-600 rounded-full">Accepted</span>
+                                    {% elif installation.status == 'REJECTED' %}
+                                    <span class="inline-block px-3 py-1 text-xs font-semibold text-red-100 bg-red-600 rounded-full">Rejected</span>
+                                    {% elif installation.status == 'EXPIRED' %}
+                                    <span class="inline-block px-3 py-1 text-xs font-semibold text-zinc-100 bg-zinc-600 rounded-full">Expired</span>
+                                    {% else %}
+                                    <span class="inline-block px-3 py-1 text-xs font-semibold text-red-100 bg-red-600 rounded-full">{{ installation.status }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="8" class="px-4 py-6 text-center text-xs text-[#c0c0c0]">No installations found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
 </div>
 {% endblock %}

@@ -24,12 +24,19 @@ class InstallationForm(forms.ModelForm):
     address = forms.CharField(widget=forms.Textarea(), label='Address')
     city = forms.CharField(max_length=100, label='City')
     state = forms.ChoiceField(
-        choices=Customer.STATE_CHOICES, # Assumes Customer.STATE_CHOICES exists
-        label='State'
+        choices=Customer.STATE_CHOICES,
+        label='State',
+        widget=forms.Select(attrs={
+            'class': 'w-9/12 bg-[#222222] text-white text-sm rounded-md p-3 border border-[#2c2c2c] focus:ring-0 focus:border-[#2c2c2c] focus:outline-none'
+        })
     )
+
     house_type = forms.ChoiceField(
-        choices=Customer.HOUSE_TYPE_CHOICES, # Assumes Customer.HOUSE_TYPE_CHOICES exists
-        label='House Type'
+        choices=Customer.HOUSE_TYPE_CHOICES,
+        label='House Type',
+        widget=forms.Select(attrs={
+            'class': 'w-9/12 bg-[#222222] text-white text-sm rounded-md p-3 border border-[#2c2c2c] focus:ring-0 focus:border-[#2c2c2c] focus:outline-none'
+        })
     )
     postcode = forms.CharField(max_length=10, label='Postcode')
 
@@ -38,7 +45,7 @@ class InstallationForm(forms.ModelForm):
         queryset=ChargerModel.objects.all(),
         empty_label='Choose Charger Model',
         label='Charger Model',
-        widget=forms.Select(attrs={'class': 'w-9/12 bg-[#222222] text-white rounded-md p-3 border border-[#2c2c2c] focus:ring-0 focus:border-[#2c2c2c] focus:outline-none'}),
+        widget=forms.Select(attrs={'class': 'w-9/12 bg-[#222222] text-white text-sm rounded-md p-3 border border-[#2c2c2c] focus:ring-0 focus:border-[#2c2c2c] focus:outline-none'}),
     )
     
     # Installer dropdown (optional) - InstallerProfile ForeignKey on Installation
@@ -47,7 +54,7 @@ class InstallationForm(forms.ModelForm):
         required=False, # This is correctly set to False here
         empty_label='Choose Installer Company (Optional)',
         label='Installer Company',
-        widget=forms.Select(attrs={'class': 'w-9/12 bg-[#222222] text-white rounded-md p-3 border border-[#2c2c2c] focus:ring-0 focus:border-[#2c2c2c] focus:outline-none'}),
+        widget=forms.Select(attrs={'class': 'w-9/12 bg-[#222222] text-white text-sm rounded-md p-3 border border-[#2c2c2c] focus:ring-0 focus:border-[#2c2c2c] focus:outline-none'}),
     )
 
     # Assigned Installer (CustomUser) - AssignedInstaller ForeignKey on Installation
@@ -57,14 +64,14 @@ class InstallationForm(forms.ModelForm):
         required=False, # This is also optional at creation
         empty_label="Choose Installer User (Optional)",
         label="Assign Installer User Account",
-        widget=forms.Select(attrs={'class': 'w-9/12 bg-[#222222] text-white rounded-md p-3 border border-[#2c2c2c] focus:ring-0 focus:border-[#2c2c2c] focus:outline-none'})
+        widget=forms.Select(attrs={'class': 'w-9/12 bg-[#222222] text-white text-sm rounded-md p-3 border border-[#2c2c2c] focus:ring-0 focus:border-[#2c2c2c] focus:outline-none'})
     )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         # Apply common classes to all fields
-        common_input_classes = 'w-9/12 bg-[#222222] text-white rounded-md p-3 border border-[#2c2c2c] focus:ring-0 focus:border-[#2c2c2c] focus:outline-none'
+        common_input_classes = 'w-9/12 bg-[#222222] text-white text-sm rounded-md p-3 border border-[#2c2c2c] focus:ring-0 focus:border-[#2c2c2c] focus:outline-none'
         for field_name, field in self.fields.items():
             # Apply styling to all fields
             if field_name not in ['state', 'house_type', 'charger_model', 'installer', 'assigned_installer']:
@@ -89,11 +96,8 @@ class InstallationForm(forms.ModelForm):
         return state
 
     def clean_customer_email(self):
-        email = self.cleaned_data.get('customer_email')
-        # Only check if email exists for NEW customers, not existing ones
-        if not self.instance.pk and Customer.objects.filter(email=email).exists():
-            raise forms.ValidationError("A customer with this email already exists.")
-        return email
+        return self.cleaned_data.get('customer_email')
+
 
     def clean(self):
         cleaned_data = super().clean()

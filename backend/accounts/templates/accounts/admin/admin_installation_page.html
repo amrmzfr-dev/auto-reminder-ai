@@ -7,7 +7,7 @@
 {# The overall container for the page, setting a dark background #}
 <div class="py-8 bg-[#171717] min-h-screen flex items-center justify-center">
     {# Form starts here #}
-    <form method="post" enctype="multipart/form-data" novalidate class="w-full max-w-6xl">
+    <form method="post" enctype="multipart/form-data" novalidate class="w-full max-w-5xl">
         {% csrf_token %}
 
         {# Main form container: Dark background, rounded corners, shadow #}
@@ -21,10 +21,12 @@
                 </div>
                 <div class="flex items-center gap-x-3">
                     {# Changed the href to redirect back to the create installation page #}
-                    <a href="{% url 'create_installation' %}" class="text-sm font-medium text-[#c0c0c0] hover:text-white transition">Cancel</a>
-                    <button type="submit" class="inline-flex items-center bg-[#006239] hover:bg-[#004e2c] text-white font-semibold py-2 px-4 rounded-md transition duration-200 shadow-md">
-                        Submit Installation
-                    </button>
+                    {% if request.user.role == '1' %}
+                        <a href="{% url 'installation_list' %}" ...>Cancel</a>
+                    {% elif request.user.role == '2' %}
+                        <a href="{% url 'installation_list' %}" ...>Cancel</a>
+                    {% endif %}
+                    
                 </div>
             </div>
 
@@ -77,6 +79,11 @@
                         {% include 'partials/_form_field.html' with field=form.charger_model %}
                         {% include 'partials/_form_field.html' with field=form.installer %}
                         {% include 'partials/_form_field.html' with field=form.notes %}
+                    </div>
+                    <div class="flex justify-end pr-4 pb-4">
+                        <button type="submit" class="inline-flex items-center bg-[#006239] hover:bg-[#004e2c] text-sm text-white py-2 px-4 rounded-md transition duration-200 shadow-md">
+                            Submit Installation
+                        </button>
                     </div>
                 </div>
             </div> {# End of main content area #}

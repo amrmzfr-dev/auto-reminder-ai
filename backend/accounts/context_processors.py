@@ -22,26 +22,45 @@ def task_metrics(request):
 
 
 def installer_task_metrics(request):
+    # Ensure the user is authenticated before proceeding.
     if not request.user.is_authenticated:
+        # If not authenticated, return an empty dictionary.
         return {}
 
     try:
+        # Attempt to retrieve the installer profile associated with the user.
         installer_profile = request.user.installerprofile
     except AttributeError:
+        # If the user does not have an installer profile, return an empty dictionary.
         return {}
 
+    # Filter installations by the current installer's profile.
     installations = Installation.objects.filter(installer=installer_profile)
 
+    # Calculate the total number of tasks assigned to the installer.
     total_tasks = installations.count()
-    in_progress = installations.filter(status="In Progress").count()
-    pending = installations.filter(status="Scheduled").count()
-    completed = installations.filter(status="Completed").count()
 
+    # Count tasks with 'IN_PROGRESS' status.
+    # This aligns with ('IN_PROGRESS', 'In Progress') in STATUS_CHOICES.
+    in_progress = installations.filter(status="IN_PROGRESS").count()
+
+    # Count tasks with 'PENDING_ACCEPTANCE' status for 'pending' tasks.
+    # This replaces the old "Scheduled" which wasn't in STATUS_CHOICES and
+    # assumes 'PENDING_ACCEPTANCE' is the new equivalent for tasks awaiting action.
+    pending = installations.filter(status="PENDING_ACCEPTANCE").count()
+
+    # Count tasks with 'COMPLETED' status.
+    # This aligns with ('COMPLETED', 'Completed') in STATUS_CHOICES.
+    completed = installations.filter(status="COMPLETED").count()
+
+    # Calculate the completion rate. Avoid division by zero.
     completion_rate = int((completed / total_tasks) * 100) if total_tasks > 0 else 0
 
+    # Return a dictionary containing the calculated metrics.
     return {
         'total_tasks': total_tasks,
         'in_progress': in_progress,
         'pending': pending,
+        'completed' : completed,
         'completion_rate': completion_rate,
     }

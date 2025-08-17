@@ -16,6 +16,8 @@ from ..models import Installation # Your Installation model
 from ..models import Notification # Your Notification model
 from django.db import models # Needed for Q objects in installation_list
 
+from django.db.models import Count, Q
+
 # Import your InstallationForm
 from ..forms import InstallationForm # Adjust this import path if your form is elsewhere
 # Import your role_required decorator
@@ -25,41 +27,47 @@ from accounts.views.admin_views import role_required # Adjust this import path i
 # --- END IMPORTANT IMPORTS ---
 
 
-@login_required # Apply login_required here, assuming role_required does not
-def installation_list(request):
+@login_required
+def installation_list_view(request):
     """
-    Displays a list of installation jobs based on the logged-in user's role.
-    Admins see all installations. Installers see only their assigned installations.
+    Displays a list of installation jobs and status statistics based on the logged-in user's role.
     """
-    if request.user.role == '1':  # Assuming '1' is the role code for Admin
+    # 1. Determine the base queryset of installations based on the user's role
+    if request.user.role == '1':  # Admin
         installations_queryset = Installation.objects.all().order_by('-created_at')
         page_title = "Admin Dashboard - All Installations"
-    elif request.user.role == '2':  # Assuming '2' is the role code for Installer
-        # For installers, filter installations where they are directly assigned (CustomUser)
-        # OR where their InstallerProfile is assigned
+    elif request.user.role == '2':  # Installer
         try:
             installer_profile = InstallerProfile.objects.get(user=request.user)
             installations_queryset = Installation.objects.filter(
-                models.Q(assigned_installer=request.user) |
-                models.Q(installer=installer_profile)
+                Q(assigned_installer=request.user) | Q(installer=installer_profile)
             ).order_by('-created_at')
             page_title = f"Installer Dashboard - {installer_profile.company_name} Installations"
         except InstallerProfile.DoesNotExist:
-            # Handle case where an installer user doesn't have an InstallerProfile yet
-            # In this scenario, they can only see jobs directly assigned to their CustomUser account
             installations_queryset = Installation.objects.filter(assigned_installer=request.user).order_by('-created_at')
             page_title = "Installer Dashboard - Your Installations (Profile Missing)"
-
     else:
-        # For any other role or unassigned users, deny access
+        # Deny access for any other role
         return HttpResponseForbidden("You do not have permission to view this page.")
 
-    context = {
-        'installations': installations_queryset, # This will be the 'installations' variable in your template
-        'page_title': page_title,
-    }
-    return render(request, 'accounts/installer/installer_dashboard.html', context)
+    # 2. Calculate the status counts based on the determined queryset
+    # Use the same queryset to ensure the counts match the displayed table
+    status_counts_queryset = Installation.objects.values('status').annotate(count=Count('status'))
+    status_counts = {item['status']: item['count'] for item in status_counts_queryset}
+    total_installations = Installation.objects.count()
 
+    # 3. Prepare the final context to pass to the template
+    context = {
+        'installations': installations_queryset,  # This is for the table
+        'page_title': page_title,
+        'total_installations': total_installations, # This is for the sidebar
+        'status_counts': status_counts,
+        'STATUS_CHOICES': Installation.STATUS_CHOICES,
+    }
+
+    # Use the correct template name, which might be different for Admin/Installer
+    # In your example, you're using two different templates. You will need to decide which template to render here.
+    return render(request, 'accounts/admin/admin_installation_list.html', context)
 
 # --- Re-integrated create_installation_view with assignment and notification logic ---
 @role_required('1')  # Apply the custom role_required decorator for role_id '1'
@@ -218,5 +226,3 @@ def handle_installation_response(request, installation_id, action):
 
     messages.error(request, "Invalid request method or action.")
     return redirect(request.META.get('HTTP_REFERER', 'installation_list'))
-
-
