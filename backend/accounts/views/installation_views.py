@@ -11,17 +11,18 @@ from django.http import JsonResponse, HttpResponseForbidden
 # Make sure these imports match the actual location of your models
 from ..models import CustomUser # Your custom user model
 # Assuming these are in 'your_app' (or wherever your Customer, ChargerModel, InstallerProfile are)
-from ..models import Customer, ChargerModel, InstallerProfile
+from ..models import Customer, ChargerModel, InstallerProfile, State
 from ..models import Installation # Your Installation model
 from ..models import Notification # Your Notification model
 from django.db import models # Needed for Q objects in installation_list
-
 from django.db.models import Count, Q
 
 # Import your InstallationForm
 from ..forms import InstallationForm # Adjust this import path if your form is elsewhere
 # Import your role_required decorator
 from accounts.views.admin_views import role_required # Adjust this import path if decorator is elsewhere
+
+import random
 
 # User = get_user_model() # Typically not needed if CustomUser is directly imported
 # --- END IMPORTANT IMPORTS ---
@@ -69,78 +70,157 @@ def installation_list_view(request):
     # In your example, you're using two different templates. You will need to decide which template to render here.
     return render(request, 'accounts/admin/admin_installation_list.html', context)
 
-# --- Re-integrated create_installation_view with assignment and notification logic ---
-@role_required('1')  # Apply the custom role_required decorator for role_id '1'
+def get_customer_state_obj(customer_state_str):
+    """
+    Convert a Customer.state string to the corresponding State instance
+    based on your State table.
+    """
+    state_mapping = {
+        'Selangor': 'Central 2',
+        'Kuala Lumpur': 'Central 1',
+        'Putrajaya': 'Central 1',
+        'Perak': 'Northern',
+        'Kedah': 'Northern',
+        'Perlis': 'Northern',
+        'Penang': 'Northern',
+        'Negeri Sembilan': 'Southern',
+        'Melaka': 'Southern',
+        'Johor': 'Southern',
+        'Pahang': 'East Coast',
+        'Terengganu': 'East Coast',
+        'Kelantan': 'East Coast',
+        'Sabah': "East M'sia",
+        'Sarawak': "East M'sia",
+    }
+    state_code = state_mapping.get(customer_state_str)
+    if not state_code:
+        return None
+    try:
+        return State.objects.get(code=state_code)
+    except State.DoesNotExist:
+        return None
+
+
+# --- Helper function for automatic installer assignment ---
+def auto_assign_installer(installation):
+    """
+    Automatically assign an installer based on:
+    1. Same state priority (operational_states of installer)
+    2. Fewer past jobs
+    3. Round-robin fairness among equal candidates
+    """
+    # Step 0: Get the installation's customer state object
+    state_obj = get_customer_state_obj(installation.customer.state)
+    customer_state = installation.customer.state
+    # Step 1: Filter installers who operate in this state
+    if state_obj:
+        state_installers = CustomUser.objects.filter(
+            role='2',  # '2' = Installer
+            installerprofile__operational_states=state_obj
+        ).distinct()
+    else:
+        # Fallback: pick any installer
+        state_installers = CustomUser.objects.filter(role='2').distinct()
+
+    if not state_installers.exists():
+        # Safety fallback
+        state_installers = CustomUser.objects.filter(role='2').distinct()
+
+    # Step 2: Count past jobs per installer
+    installers_with_jobs = []
+    for installer in state_installers:
+        job_count = Installation.objects.filter(assigned_installer=installer).count()
+        installers_with_jobs.append((installer, job_count))
+
+    # Step 3: Sort ascending by number of jobs
+    installers_with_jobs.sort(key=lambda x: x[1])
+
+    # Step 4: Candidates with the least jobs
+    min_jobs = installers_with_jobs[0][1]
+    candidates = [inst for inst, jobs in installers_with_jobs if jobs == min_jobs]
+
+    # Step 5: Random choice among candidates (fairness / round-robin)
+    selected_installer = random.choice(candidates)
+
+    print(f"[DEBUG] Auto-assign installer for Installation {installation.installation_id}")
+    print(f"        Customer state: {customer_state}")
+    print(f"        Candidate installers & past jobs: {[ (i.username,j) for i,j in installers_with_jobs ]}")
+    print(f"        Chosen installer: {selected_installer.username}")
+
+    return selected_installer
+
+
+# --- Main view ---
+@role_required('1')  # Admin only
 def create_installation_view(request):
     """
-    Handles the creation of a new Installation and its associated Customer.
-    If an installer is assigned in the form, the status is set to PENDING_ACCEPTANCE
-    and an in-app notification is sent.
+    Handles the creation of a new Installation.
+    Automatically assigns an installer if none is manually selected,
+    based on customer state, past jobs, and fairness.
     """
     if request.method == 'POST':
         form = InstallationForm(request.POST)
         if form.is_valid():
-            print("[DEBUG] Form is valid")
             try:
-                # Save the form instance without committing to the database yet
+                # Save form without committing yet
                 installation = form.save(commit=False)
 
-                # Get assigned installer details from the form
+                # Get manual assignment from form
                 assigned_user = form.cleaned_data.get('assigned_installer')
                 installer_profile = form.cleaned_data.get('installer')
 
-                # Logic to handle status transition and assignment
                 if assigned_user or installer_profile:
-                    # If an installer is selected, set status to PENDING_ACCEPTANCE
-                    installation.status = 'PENDING_ACCEPTANCE'
-                    # Set assignment expiration (e.g., 24 hours from now)
-                    installation.assignment_expires_at = timezone.now() + datetime.timedelta(hours=24)
-
-                    # Ensure assigned_installer matches installer_profile's user if both are provided
+                    # Manual assignment
                     if assigned_user and installer_profile and installer_profile.user != assigned_user:
-                        form.add_error('installer', "Selected installer company profile must match the assigned user.")
-                        print("[ERROR] Installer profile user mismatch during form processing.")
-                        return render(request, 'accounts/admin/admin_installation_page.html', context={'form': form})
-                    
-                    # If only installer_profile is provided, use its linked user as assigned_installer
+                        form.add_error(
+                            'installer',
+                            "Selected installer company profile must match the assigned user."
+                        )
+                        return render(
+                            request,
+                            'accounts/admin/admin_installation_page.html',
+                            {'form': form}
+                        )
+
+                    installation.status = 'PENDING_ACCEPTANCE'
+                    installation.assignment_expires_at = timezone.now() + timezone.timedelta(hours=24)
+
                     if installer_profile and not assigned_user:
                         installation.assigned_installer = installer_profile.user
-                    elif assigned_user: # If assigned_user is explicitly provided (and maybe installer_profile too)
+                    elif assigned_user:
                         installation.assigned_installer = assigned_user
-                    
-                    # Ensure installer_profile is set on the installation if it was selected
+
                     installation.installer = installer_profile
+
                 else:
-                    # If no installer is assigned, status remains SUBMITTED (default from model)
-                    installation.status = 'SUBMITTED'
-                    installation.assignment_expires_at = None # Ensure it's null if not pending
+                    # AUTO ASSIGN installer
+                    selected_installer = auto_assign_installer(installation)
+                    installation.assigned_installer = selected_installer
+                    installation.status = 'PENDING_ACCEPTANCE'
+                    installation.assignment_expires_at = timezone.now() + timezone.timedelta(hours=24)
 
-                installation.save() # Now save the installation object with updated fields
+                    # Attach installer_profile if exists
+                    try:
+                        installation.installer = selected_installer.installerprofile
+                    except InstallerProfile.DoesNotExist:
+                        installation.installer = None
 
-                # Create in-app notification if an installer was assigned and status is PENDING_ACCEPTANCE
-                if installation.status == 'PENDING_ACCEPTANCE' and installation.assigned_installer:
-                    Notification.objects.create(
-                        user=installation.assigned_installer, # Notify the CustomUser
-                        message=f"You have been assigned a new installation job: {installation.installation_id} for {installation.customer.name} at {installation.address}. Please respond within 24 hours.",
-                        related_installation=installation
-                    )
-                    print(f"[DEBUG] Notification sent to {installation.assigned_installer.username}.")
+                # Save installation
+                installation.save()
 
-                print("[DEBUG] Installation created/assigned successfully. Redirecting to detail page.")
-                # Redirect to the detail page of the newly created/assigned installation
+                # Redirect to detail page
                 return redirect('installation_detail', installation_id=installation.installation_id)
+
             except Exception as e:
                 form.add_error(None, f"An error occurred during saving: {e}")
-                print(f"[ERROR] Saving error: {e}")
+
         else:
-            print(f"[ERROR] Form errors: {form.errors.as_json()}") # More detailed error logging
+            print(f"[ERROR] Form errors: {form.errors.as_json()}")
+
     else:
         form = InstallationForm()
 
-    context = {
-        'form': form,
-    }
-    return render(request, 'accounts/admin/admin_installation_page.html', context)
+    return render(request, 'accounts/admin/admin_installation_page.html', {'form': form})
 
 
 @role_required('1')  # Only allow role_id '1' (admin)
