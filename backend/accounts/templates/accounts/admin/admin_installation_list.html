@@ -75,7 +75,8 @@
                         </thead>
                         <tbody>
                             {% for installation in installations %}
-                            <tr class="hover:bg-[#2c2c2c] transition duration-150 border-t border-[#292929]">
+                            <tr class="hover:bg-[#2c2c2c] transition duration-150 border-t border-[#292929] cursor-pointer"
+                        onclick="window.location.href = '{% url 'installation_detail' installation.installation_id %}';">
                                 <td class="px-4 py-3 text-center text-xs">{{ installation.installation_id }}</td>
                                 <td class="px-4 py-3 text-center text-xs">{{ installation.customer.name }}</td>
                                 <td class="px-4 py-3 text-center text-xs">{{ installation.customer.city }}, {{ installation.customer.state }}</td>
