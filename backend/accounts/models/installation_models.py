@@ -166,17 +166,24 @@ class Installation(models.Model):
         state and house_type, and set the creation date if not provided.
         """
         if not self.installation_id:
-            # Generate installation_id based on customer's state and house_type
-            state_code = self.customer.state[:2].upper()  # e.g., Selangor → 'SE'
+            state_code = self.customer.state[:2].upper()  # 'SE'
             type_code = self.customer.house_type.upper()  # 'L' or 'H'
 
-            # Count existing installations to get a sequential number
-            count = Installation.objects.filter(
-                customer__state=self.customer.state,
-                customer__house_type=self.customer.house_type
-            ).count() + 1
+            # Look for existing IDs with the same prefix
+            prefix = f"{state_code}{type_code}"
+            last_installation = Installation.objects.filter(
+                installation_id__startswith=prefix
+            ).order_by('-installation_id').first()
 
-            self.installation_id = f"{state_code}{type_code}{count:06d}"
+            if last_installation:
+                # Extract the numeric suffix and increment
+                last_number = int(last_installation.installation_id[-6:])
+                new_number = last_number + 1
+            else:
+                new_number = 1
+
+            self.installation_id = f"{prefix}{new_number:06d}"
+
 
         # Set default date if not provided
         if not self.installation_created_date:

@@ -1,5 +1,6 @@
 from .models import Task
 from .models import Installation
+from .models import InstallerProfile
 
 def task_metrics(request):
     if not request.user.is_authenticated:
@@ -63,4 +64,48 @@ def installer_task_metrics(request):
         'pending': pending,
         'completed' : completed,
         'completion_rate': completion_rate,
+    }
+
+def current_company(request):
+    if not request.user.is_authenticated:
+        return {"current_company": "Company"}
+
+    if getattr(request.user, "role", None) == 1:
+        # Admin fallback
+        return {"current_company": "Admin"}
+
+    try:
+        installer = InstallerProfile.objects.get(user=request.user)
+        company_name = installer.company_name or "Company"
+    except InstallerProfile.DoesNotExist:
+        company_name = "Company"
+
+    initial = company_name[0].upper() if company_name else "C"
+
+    return {"current_company": company_name, "company_initial": initial}
+
+def user_company_info(request):
+    if not request.user.is_authenticated:
+        return {
+            "username": "Guest",
+            "company_name": "Company",
+            "company_initial": "C"
+        }
+ 
+    username = request.user.username
+    if getattr(request.user, "role", None) == 1:
+        company_name = "Admin"
+    else:
+        try:
+            installer = InstallerProfile.objects.get(user=request.user)
+            company_name = installer.company_name or "Company"
+        except InstallerProfile.DoesNotExist:
+            company_name = "Company"
+
+    company_initial = company_name[0].upper() if company_name else "C"
+
+    return {
+        "username": username,
+        "company_name": company_name,
+        "company_initial": company_initial,
     }
