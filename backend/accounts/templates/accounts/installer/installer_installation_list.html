@@ -3,35 +3,10 @@
 {% load custom_filters %}
 {% load status_tags %}
 
-<div class="flex min-h-screen bg-[#171717] text-[#c0c0c0] ">
+<div class="flex min-h-screen bg-[#171717] text-[#c0c0c0]">
     <aside class="w-72 flex-shrink-0 bg-[#171717] p-4 border-r border-[#292929]">
         <div class="flex flex-col h-full">
-            <h1 class="text-lg font-semibold mb-4 text-white">Job Management</h1>
-
-            <a href="{% url 'create_installation' %}"
-            class="flex items-center text-sm justify-center w-full h-7 bg-[#006239] hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-md mb-4 transition duration-200">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                </svg>
-                New Job
-            </a>
-
-            <form method="get" action="">
-                <div class="relative mb-6">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-3">
-                        <svg class="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none"
-                             stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                             stroke-linejoin="round">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        </svg>
-                    </span>
-                    <input type="text" name="q" value="{{ request.GET.q }}" placeholder="Search"
-                           class="w-full py-2 pl-10 pr-4 text-sm text-white bg-[#171717] border border-[#292929] rounded-md focus:outline-none focus:border-[#292929]"/>
-                </div>
-            </form>
+            <h1 class="text-lg font-semibold mb-4 text-white">My Jobs</h1>
 
             <div class="flex flex-col text-sm text-[#c0c0c0]">
                 <table class="min-w-full text-sm bg-[#171717] text-white rounded-md shadow-sm border border-[#2c2c2c] mb-4">
@@ -43,7 +18,7 @@
                     </thead>
                     <tbody>
                         <tr class="hover:bg-[#2c2c2c] transition duration-150 border-b border-[#2c2c2c]">
-                            <td class="px-4 py-2 text-xs font-medium">Total Installations:</td>
+                            <td class="px-4 py-2 text-xs font-medium">My Installations:</td>
                             <td class="px-4 py-2 text-right text-white text-xs font-bold">{{ total_installations }}</td>
                         </tr>
                         {% for status_key, status_label in STATUS_CHOICES %}
@@ -60,7 +35,7 @@
 
     <main class="flex-1 p-6">
         <div class="max-w-8xl mx-auto">
-            <h2 class="text-lg font-semibold text-[#c0c0c0] mb-6">Installation Job List</h2>
+            <h2 class="text-lg font-semibold text-[#c0c0c0] mb-6">My Installation Jobs</h2>
             <div class="overflow-x-auto">
                 <div class="max-h-[800px] overflow-y-auto hide-scrollbar border border-[#292929] rounded-md shadow-sm">
                     <table class="min-w-full text-xs bg-[#1f1f1f] text-white">
@@ -70,26 +45,30 @@
                                 <th class="px-4 py-3 text-center text-xs font-medium">Customer</th>
                                 <th class="px-4 py-3 text-center text-xs font-medium">Location</th>
                                 <th class="px-4 py-3 text-center text-xs font-medium">Charger Model</th>
-                                <th class="px-4 py-3 text-center text-xs font-medium">Installer</th>
-                                <th class="px-4 py-3 text-center text-xs font-medium rounded-tr-md">Status</th>
+                                <th class="px-4 py-3 text-center text-xs font-medium">Status</th>
+                                <th class="px-4 py-3 text-center text-xs font-medium rounded-tr-md">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for installation in installations %}
-                            <tr class="hover:bg-[#2c2c2c] transition duration-150 border-t border-[#292929] cursor-pointer"
-                        onclick="window.location.href = '{% url 'installation_detail' installation.installation_id %}';">
+                            <tr class="hover:bg-[#2c2c2c] transition duration-150 border-t border-[#292929]">
                                 <td class="px-4 py-3 text-center text-xs">{{ installation.installation_id }}</td>
                                 <td class="px-4 py-3 text-center text-xs">{{ installation.customer.name }}</td>
                                 <td class="px-4 py-3 text-center text-xs">{{ installation.customer.city }}, {{ installation.customer.state }}</td>
                                 <td class="px-4 py-3 text-center text-xs">{{ installation.charger_model.model_name }}</td>
-                                <td class="px-4 py-3 text-center text-xs">{{ installation.installer|default:"-" }}</td>
                                 <td class="px-4 py-3 text-center text-xs">
                                     {{ installation.status|render_status_badge }}
+                                </td>
+                                <td class="px-4 py-3 text-center text-xs">
+                                    <a href="{% url 'installation_detail' installation.installation_id %}" 
+                                       class="text-blue-400 hover:text-blue-300 underline">View Details</a>
                                 </td>
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="8" class="px-4 py-6 text-center text-xs text-[#c0c0c0]">No installations found.</td>
+                                <td colspan="6" class="px-4 py-8 text-center text-gray-400">
+                                    No installations assigned to you yet.
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>

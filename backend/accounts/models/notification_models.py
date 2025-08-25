@@ -1,8 +1,8 @@
 # notifications/models.py
 from django.db import models
 from django.contrib.auth.models import User # Assuming Django's built-in User model
-from ..models import Installation # Assuming your Installation model is in an 'installations' app
-from ..models import CustomUser
+from .installation_models import Installation
+from .installer_models import CustomUser
 
 class Notification(models.Model):
     """
