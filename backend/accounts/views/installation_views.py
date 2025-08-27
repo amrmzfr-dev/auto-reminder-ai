@@ -13,14 +13,14 @@ from ..models import CustomUser # Your custom user model
 # Assuming these are in 'your_app' (or wherever your Customer, ChargerModel, InstallerProfile are)
 from ..models import Customer, ChargerModel, InstallerProfile, State
 from ..models import Installation # Your Installation model
-from ..models import Notification # Your Notification model
 from django.db import models # Needed for Q objects in installation_list
 from django.db.models import Count, Q
 
 # Import your InstallationForm
 from ..forms import InstallationForm # Adjust this import path if your form is elsewhere
 # Import your role_required decorator
-from accounts.views.admin_views import role_required # Adjust this import path if decorator is elsewhere
+from ..decorators import role_required
+from ..services import InstallationService
 
 import random
 
@@ -33,42 +33,38 @@ def installation_list_view(request):
     """
     Displays a list of installation jobs and status statistics based on the logged-in user's role.
     """
-    # 1. Determine the base queryset of installations based on the user's role
+    # Use service layer to get installations and determine template
+    installations_queryset = InstallationService.get_installations_for_user(request.user)
+    
     if request.user.role == '1':  # Admin
-        installations_queryset = Installation.objects.all().order_by('-created_at')
         page_title = "Admin Dashboard - All Installations"
+        template_name = 'accounts/admin/admin_installation_list.html'
     elif request.user.role == '2':  # Installer
         try:
             installer_profile = InstallerProfile.objects.get(user=request.user)
-            installations_queryset = Installation.objects.filter(
-                Q(assigned_installer=request.user) | Q(installer=installer_profile)
-            ).order_by('-created_at')
             page_title = f"Installer Dashboard - {installer_profile.company_name} Installations"
         except InstallerProfile.DoesNotExist:
-            installations_queryset = Installation.objects.filter(assigned_installer=request.user).order_by('-created_at')
             page_title = "Installer Dashboard - Your Installations (Profile Missing)"
+        template_name = 'accounts/installer/installer_installation_list.html'
     else:
         # Deny access for any other role
         return HttpResponseForbidden("You do not have permission to view this page.")
 
-    # 2. Calculate the status counts based on the determined queryset
-    # Use the same queryset to ensure the counts match the displayed table
-    status_counts_queryset = Installation.objects.values('status').annotate(count=Count('status'))
-    status_counts = {item['status']: item['count'] for item in status_counts_queryset}
-    total_installations = Installation.objects.count()
+    # Get status counts and total installations
+    status_counts = InstallationService.get_status_counts()
+    total_installations = installations_queryset.count()
 
-    # 3. Prepare the final context to pass to the template
+    # Prepare the context
     context = {
-        'installations': installations_queryset,  # This is for the table
+        'installations': installations_queryset,
         'page_title': page_title,
-        'total_installations': total_installations, # This is for the sidebar
+        'total_installations': total_installations,
         'status_counts': status_counts,
         'STATUS_CHOICES': Installation.STATUS_CHOICES,
     }
 
-    # Use the correct template name, which might be different for Admin/Installer
-    # In your example, you're using two different templates. You will need to decide which template to render here.
-    return render(request, 'accounts/admin/admin_installation_list.html', context)
+    # Render the appropriate template based on user role
+    return render(request, template_name, context)
 
 def get_customer_state_obj(customer_state_str):
     """

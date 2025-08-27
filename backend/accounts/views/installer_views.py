@@ -6,37 +6,10 @@ from django.views.generic import DetailView, UpdateView
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseForbidden
-from functools import wraps
 from ..models import InstallerProfile, Installation
 from ..forms import InstallerProfileForm
-
-# -----------------------------------------------
-# 🛡️ Role-Based Access Control Decorator
-# -----------------------------------------------
-def role_required(required_role):
-    """
-    A custom decorator to restrict access to views based on the user's role.
-    It ensures that only users with a specific 'required_role' can access the view.
-
-    Args:
-        required_role (str): The role string ('1' for Admin, '2' for Installer)
-                             that is required to access the decorated view.
-
-    Returns:
-        function: A decorator that wraps the view function, enforcing role-based access.
-    """
-    def decorator(view_func):
-        @wraps(view_func)  # Preserves the original function's metadata
-        @login_required    # Ensures the user is logged in
-        def _wrapped_view(request, *args, **kwargs):
-            # Check if the logged-in user's role matches the required role
-            if hasattr(request.user, 'role') and request.user.role == required_role:
-                return view_func(request, *args, **kwargs)
-            # If roles do not match, return an HTTP 403 Forbidden response
-            return HttpResponseForbidden("❌ Access Denied")
-        return _wrapped_view
-    return decorator
+from ..decorators import role_required
+from ..services import InstallationService
 
 
 # ------------------------------
@@ -52,23 +25,14 @@ def installer_dashboard_view(request):
         messages.error(request, "Installer profile not found. Please contact support.")
         return redirect('logout')
 
-    # Filter installations for this installer only
-    installations = Installation.objects.filter(installer=profile).order_by('-installation_created_date')
-
-    # Your KPI stats code here (optional)
-    total_tasks = installations.count()
-    in_progress = installations.filter(status='IN_PROGRESS').count()
-    pending = installations.filter(status='PENDING_ACCEPTANCE').count()
-    completed = installations.filter(status='COMPLETED').count()
-    completion_rate = int((completed / total_tasks) * 100) if total_tasks > 0 else 0
+    # Use service layer to get installations and calculate stats
+    installations = InstallationService.get_installer_installations(profile)
+    stats = InstallationService.calculate_installer_stats(installations)
 
     context = {
         'profile': profile,
         'installations': installations,
-        'total_tasks': total_tasks,
-        'in_progress': in_progress,
-        'pending': pending,
-        'completion_rate': completion_rate,
+        **stats,  # Unpack all stats into context
     }
     return render(request, 'accounts/installer/installer_dashboard.html', context)
 
