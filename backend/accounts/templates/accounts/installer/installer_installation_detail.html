@@ -5,7 +5,6 @@
 {% block content %}
 <div class="min-h-screen bg-[#171717] text-gray-200">
     {% load custom_filters %}
-    {% load status_tags %}
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="bg-[#171717] overflow-hidden">
 
@@ -18,8 +17,12 @@
                             <h2 class="text-xl font-semibold text-white">
                                 Installation: {{ installation.installation_id }}
                             </h2>
-                            <span id="status-badge" class="px-3 py-1 rounded-full text-sm font-semibold {{ installation.status|get_status_classes }}">
-                                {{ installation.status|get_status_display_name }}
+                            <span id="status-badge" class="px-3 py-1 rounded-full text-sm font-semibold
+                                {% if installation.status == 'ACCEPTED' or installation.status == 'COMPLETED' %}bg-green-600 text-green-100
+                                {% elif installation.status == 'PENDING_ACCEPTANCE' or installation.status == 'IN_PROGRESS' %}bg-yellow-600 text-yellow-100
+                                {% elif installation.status == 'REJECTED' or installation.status == 'EXPIRED' %}bg-red-600 text-red-100
+                                {% else %}bg-gray-600 text-gray-100{% endif %}">
+                                {{ installation.get_status_display }}
                             </span>
                         </div>
                         <p class="text-sm text-gray-400">Detailed overview of the installation job.</p>
@@ -113,7 +116,7 @@
                     <p class="text-gray-300 mb-2 text-sm">
                         <strong class="font-medium text-gray-400">Current Status:</strong>
                         <span id="status-badge-inline" class="text-gray-300 mb-2 text-sm">
-                            {{ installation.status|get_status_display_name }}
+                            {{ installation.get_status_display }}
                         </span>
                     </p>
                     <p class="text-gray-300 mb-2 text-sm"><strong class="font-medium text-sm text-gray-400">Assigned User:</strong> {{ installation.assigned_installer.username|default:"Not yet assigned" }}</p>
