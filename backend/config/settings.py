@@ -41,7 +41,20 @@ INSTALLED_APPS = [
     'accounts',
     'widget_tweaks',
     "storages",
+     "channels",
+    
 ]
+
+
+ASGI_APPLICATION = "config.asgi.application"
+
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {"hosts": [("127.0.0.1", 6379)]},  # needs Redis running
+    },
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -153,3 +166,10 @@ STORAGES = {
     },
 }
 
+ASGI_APPLICATION = "accounts.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}

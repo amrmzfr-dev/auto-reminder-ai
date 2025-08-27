@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+
+{% block title %}Notifications - AutoReminder{% endblock %}
+
+{% block content %}
+<div class="min-h-screen ml-16 mt-12 p-8 text-white">
+	<div class="flex items-center justify-between mb-6">
+		<h1 class="text-2xl font-bold">Notifications</h1>
+		<div class="space-x-3">
+			<button id="mark-all" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs">Mark all read</button>
+			<button id="clear-all-page" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs">Clear all</button>
+		</div>
+	</div>
+
+	<style>
+	/* Hard override any accidental hiding */
+	#notif-list .go-to-button{ display:inline-block !important; visibility:visible !important; opacity:1 !important; }
+	#notif-list .actions{ display:flex !important; align-items:center !important; gap:0.75rem !important; }
+	</style>
+
+	<div id="notif-list" class="bg-gray-800 rounded-xl shadow p-2 divide-y divide-gray-700"></div>
+</div>
+
+<script>
+const LIST_URL = "{% url 'admin_notifications' %}";
+const MARK_ALL_URL = "{% url 'mark_all_notifications_read' %}";
+const CLEAR_URL = "{% url 'clear_notifications' %}";
+function delUrl(id){ return "{% url 'delete_notification' 0 %}".replace('/0/','/' + id + '/'); }
+function markReadUrl(id){ return "{% url 'mark_notification_read' 0 %}".replace('/0/','/' + id + '/'); }
+
+function installationDetailUrl(installationId){
+	const template = "{% url 'installation_detail' 'INSTALL_ID_PLACEHOLDER' %}";
+	return template.replace('INSTALL_ID_PLACEHOLDER', installationId);
+}
+function taskDetailUrl(taskId){
+	return "{% url 'task_detail' 0 %}".replace('/0/','/' + taskId + '/');
+}
+const ADMIN_DASHBOARD_URL = "{% url 'admin_dashboard' %}";
+
+async function loadPageNotifs(){
+	const res = await fetch(LIST_URL);
+	if(!res.ok){ return; }
+	const data = await res.json();
+	console.log('[Notif] Loaded', data.notifications?.length || 0, 'notifications');
+	renderList(data.notifications);
+}
+
+function highlightFromHash(){
+	const hash = window.location.hash;
+	if(!hash || !hash.startsWith('#n-')) return;
+	const id = hash.substring(3);
+	const el = document.getElementById('n-'+id);
+	if(el){
+		el.classList.add('ring-2','ring-blue-500');
+		el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+		setTimeout(()=> el.classList.remove('ring-2','ring-blue-500'), 3000);
+	}
+}
+
+function ensureButtonsVisible(){
+	const buttons = document.querySelectorAll('#notif-list .go-to-button');
+	console.log('[Notif] Go To buttons found:', buttons.length);
+	buttons.forEach((btn, idx) => {
+		// Remove common hiding classes
+		btn.classList.remove('hidden', 'invisible');
+		// Force on element
+		btn.style.setProperty('display','inline-block','important');
+		btn.style.setProperty('visibility','visible','important');
+		btn.style.setProperty('opacity','1','important');
+		btn.style.setProperty('background-color','#2563eb','important');
+		btn.style.setProperty('color','#fff','important');
+		// Ensure actions container is visible
+		const actions = btn.closest('.actions');
+		if(actions){
+			actions.classList.remove('hidden','invisible');
+			actions.style.setProperty('display','flex','important');
+			actions.style.setProperty('gap','0.75rem','important');
+			actions.style.setProperty('align-items','center','important');
+		}
+		// Walk up ancestors to remove display:none/hidden
+		let ancestor = btn.parentElement;
+		while(ancestor && ancestor.id !== 'notif-list'){
+			if(ancestor.classList){ ancestor.classList.remove('hidden','invisible'); }
+			ancestor.style && ancestor.style.setProperty('display','', 'important');
+			ancestor = ancestor.parentElement;
+		}
+		// Log final computed style
+		const cs = getComputedStyle(btn);
+		console.log(`[Notif] Button #${idx+1} styles:`, {display: cs.display, visibility: cs.visibility, opacity: cs.opacity});
+	});
+}
+
+function goToItem(installationId, taskId, notificationId) {
+	fetch(markReadUrl(notificationId), { method: 'POST', headers: { 'X-CSRFToken': getCookie('csrftoken') } });
+	if (installationId) {
+		window.location.href = installationDetailUrl(installationId) + `?highlight=notification-${notificationId}`;
+	} else if (taskId) {
+		window.location.href = taskDetailUrl(taskId) + `?highlight=notification-${notificationId}`;
+	} else {
+		window.location.href = ADMIN_DASHBOARD_URL + `?from=notification-${notificationId}`;
+	}
+}
+
+function renderList(items){
+	const container = document.getElementById('notif-list');
+	if(!items || items.length===0){
+		container.innerHTML = `<div class="p-6 text-center text-gray-400">No notifications</div>`;
+		return;
+	}
+	const unread = items.filter(n=>!n.is_read);
+	const ordered = [...unread, ...items.filter(n=>n.is_read)];
+	container.innerHTML = ordered.map(n => `
+		<div id="n-${n.id}" class="p-3 flex items-start justify-between ${n.is_read? 'opacity-70':''}">
+			<div class="flex-1">
+				<p class="text-sm ${n.is_read? 'text-gray-300':'text-white font-semibold'}">${n.message}</p>
+				<div class="mt-1 flex items-center gap-2">
+					<span class="text-xs text-gray-400">${n.created_at}</span>
+					${n.priority ? `
+						<span class="text-[10px] px-2 py-0.5 rounded-full ${n.priority==='High' ? 'bg-yellow-600 text-yellow-100' : (n.priority==='Medium' ? 'bg-green-700 text-green-100' : 'bg-gray-600 text-gray-100')}">${n.priority}</span>
+					` : ''}
+				</div>
+			</div>
+			<div class="actions" style="display:flex;align-items:center;gap:0.75rem;">
+				<button class="go-to-button text-xs text-white px-2 py-1 rounded"
+					style="background-color:#2563eb; display:inline-block; visibility:visible; opacity:1; border:1px solid #fbbf24;"
+					onclick="goToItem('${n.related_installation || ''}', '${n.related_task || ''}', ${n.id})">
+					Go To
+				</button>
+				${!n.is_read ? `<span class="inline-block h-2 w-2 rounded-full bg-red-400 align-middle"></span>` : ''}
+				<button class="text-xs text-red-400 hover:text-red-300" onclick="deleteOne(${n.id})">Delete</button>
+			</div>
+		</div>
+	`).join('');
+	highlightFromHash();
+	setTimeout(ensureButtonsVisible, 0);
+}
+
+async function deleteOne(id){
+	const res = await fetch(delUrl(id), { method: 'POST', headers: { 'X-CSRFToken': getCookie('csrftoken') } });
+	if(res.ok){ loadPageNotifs(); }
+}
+
+document.getElementById('mark-all').addEventListener('click', async ()=>{
+	const res = await fetch(MARK_ALL_URL, { method: 'POST', headers: { 'X-CSRFToken': getCookie('csrftoken') } });
+	if(res.ok){ loadPageNotifs(); }
+});
+
+document.getElementById('clear-all-page').addEventListener('click', async ()=>{
+	const res = await fetch(CLEAR_URL, { method: 'POST', headers: { 'X-CSRFToken': getCookie('csrftoken') } });
+	if(res.ok){ loadPageNotifs(); }
+});
+
+function getCookie(name) {
+	let cookieValue = null;
+	if (document.cookie && document.cookie !== '') {
+		const cookies = document.cookie.split(';');
+		for (let i = 0; i < cookies.length; i++) {
+			const cookie = cookies[i].trim();
+			if (cookie.substring(0, name.length + 1) === (name + '=')) {
+				cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+				break;
+			}
+		}
+	}
+	return cookieValue;
+}
+
+document.addEventListener('DOMContentLoaded', ()=>{ loadPageNotifs(); highlightFromHash(); });
+</script>
+{% endblock %} 

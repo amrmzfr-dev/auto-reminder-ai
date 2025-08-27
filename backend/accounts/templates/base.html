@@ -28,7 +28,7 @@
         textarea:-webkit-autofill:hover,
         textarea:-webkit-autofill:focus,
         select:-webkit-autofill,
-        select:-webkit-autofill:hover,
+        select:-webkit.autofill:hover,
         select:-webkit-autofill:focus {
             -webkit-box-shadow: 0 0 0px 1000px #222222 inset;
             -webkit-text-fill-color: #FFFFFF; 
@@ -51,6 +51,45 @@
         </div>
         <div class="flex items-center space-x-4 mr-2">
             <button class="text-xs hover:bg-gray-800 px-3 py-1.5 rounded-md">Feedback</button>
+            
+            <!-- 🔔 Notification Bell -->
+            <div class="relative">
+                <button id="notification-button" class="relative w-8 h-8 rounded-md flex items-center justify-center hover:bg-gray-800 transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-400">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+                    </svg>
+                    <!-- Notification Badge -->
+                    <span id="notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold hidden">0</span>
+                </button>
+                
+                <!-- Notification Dropdown -->
+                <div id="notification-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-[#202020] border border-[#2c2c2c] rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+                    <div class="p-3 border-b border-[#363636]">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-semibold text-white text-sm">Notifications</h3>
+                            <div class="space-x-3">
+                                <button id="mark-all-read" class="text-xs text-blue-400 hover:text-blue-300">Mark all read</button>
+                                <button id="clear-all" class="text-xs text-red-400 hover:text-red-300">Clear all</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="notification-list" class="p-2">
+                        <!-- Notifications will be populated here -->
+                        <div class="text-center py-8 text-gray-400 text-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 mx-auto mb-2 text-gray-600">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+                            </svg>
+                            <p>No notifications yet</p>
+                        </div>
+                    </div>
+                    
+                    <div class="p-2 border-t border-[#363636]">
+                        <a href="{% url 'notifications_page' %}" class="block text-center text-xs text-blue-400 hover:text-blue-300 py-1">View all notifications</a>
+                    </div>
+                </div>
+            </div>
+            
             <button class="hover:bg-gray-800 w-8 h-8 rounded-md flex items-center justify-center">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
@@ -115,6 +154,10 @@
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" /></svg>
                     <span class="ml-4 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Upload Test</span>
                 </a>
+                <a href="{% url 'notifications_page' %}" class="flex items-center h-8 px-[0.4rem] rounded-lg transition-colors duration-200 {% if request.resolver_match.url_name == 'notifications_page' %}bg-zinc-800 text-white{% else %}text-gray-400 hover:bg-zinc-900 hover:text-white{% endif %}">
+                    <i class="fas fa-bell w-5 h-5 shrink-0 flex items-center justify-center"></i>
+                    <span class="ml-4 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Notifications</span>
+                </a>
             {% elif request.user.role == '2' %}
                 <a href="{% url 'installer_dashboard' %}" class="flex items-center h-8 px-[0.4rem] rounded-lg transition-colors duration-200 {% if request.resolver_match.url_name == 'installer_dashboard' %}bg-zinc-800 text-white{% else %}text-gray-400 hover:bg-zinc-900 hover:text-white{% endif %}">
                     <i class="fas fa-tools w-5 h-5 shrink-0 flex items-center justify-center"></i>
@@ -156,5 +199,366 @@
             }
         });
     </script>
+
+    <!-- 🔔 Notification System JavaScript -->
+    <script>
+        // Django URL helpers
+        const NOTIF_LIST_URL = "{% url 'admin_notifications' %}";
+        const NOTIF_MARK_ALL_URL = "{% url 'mark_all_notifications_read' %}";
+        function notifMarkReadUrl(id) { return "{% url 'mark_notification_read' 0 %}".replace('/0/','/' + id + '/'); }
+
+        // Notification elements
+        const notificationButton = document.getElementById('notification-button');
+        const notificationDropdown = document.getElementById('notification-dropdown');
+        const notificationBadge = document.getElementById('notification-badge');
+        const notificationList = document.getElementById('notification-list');
+        const markAllReadButton = document.getElementById('mark-all-read');
+
+        // Notification state
+        let notifications = [];
+        let unreadCount = 0;
+
+        function safeBindBellClick() {
+            if (!notificationButton) return;
+            // Remove any existing listener by cloning
+            const clone = notificationButton.cloneNode(true);
+            notificationButton.parentNode.replaceChild(clone, notificationButton);
+            clone.addEventListener('click', async (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                // Toggle dropdown and load
+                if (notificationDropdown) {
+                    notificationDropdown.classList.toggle('hidden');
+                }
+                await loadNotifications();
+            });
+        }
+
+        // Toggle notification dropdown (kept for future UI; not used now)
+        function bindOutsideClose() {
+            window.addEventListener('click', (event) => {
+                if (!notificationDropdown) return;
+                if (notificationDropdown.classList.contains('hidden')) return;
+                if (notificationButton && !notificationButton.contains(event.target) && !notificationDropdown.contains(event.target)) {
+                    notificationDropdown.classList.add('hidden');
+                }
+            });
+        }
+
+        // Mark all notifications as read
+        if (markAllReadButton) {
+            markAllReadButton.addEventListener('click', () => {
+                markAllNotificationsAsRead();
+            });
+        }
+
+        // Add listeners for header actions that may be missing at startup
+        const clearAllButton = document.getElementById('clear-all');
+        if (clearAllButton) {
+            clearAllButton.addEventListener('click', () => {
+                clearAllNotifications();
+            });
+        }
+
+        // Load notifications from server
+        async function loadNotifications() {
+            console.log('🔔 Loading notifications...');
+            try {
+                const response = await fetch(NOTIF_LIST_URL);
+                console.log('🔔 Response status:', response.status);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('🔔 Notification data received:', data);
+                    
+                    notifications = Array.isArray(data.notifications) ? data.notifications : [];
+                    unreadCount = Number.isFinite(data.unread_count) ? data.unread_count : 0;
+                    
+                    updateNotificationDisplay();
+                    updateBadge();
+                } else {
+                    console.error('Failed to load notifications:', response.status);
+                    const errorText = await response.text();
+                    console.error('Error response:', errorText);
+                    notificationList && (notificationList.innerHTML = `<div class="text-center py-4 text-red-400 text-sm">Error loading notifications (${response.status})</div>`);
+                }
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+                // Show error in notification list
+                if (notificationList) {
+                    notificationList.innerHTML = `
+                        <div class="text-center py-4 text-gray-400 text-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 mx-auto mb-2 text-red-600">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                            </svg>
+                            <p>Error loading notifications</p>
+                            <p class="text-xs text-red-400 mt-1">${error.message}</p>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        // Update notification display (dropdown list)
+        function updateNotificationDisplay() {
+            if (!notificationList) return;
+            if (!notifications || notifications.length === 0) {
+                notificationList.innerHTML = `
+                    <div class="text-center py-8 text-gray-400 text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 mx-auto mb-2 text-gray-600">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+                        </svg>
+                        <p>No notifications yet</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Unread first
+            const unread = notifications.filter(n => !n.is_read);
+            const read = notifications.filter(n => n.is_read);
+            const ordered = [...unread, ...read];
+
+            // Optional unread section header
+            const sections = [];
+            if (unread.length) {
+                sections.push(`<div class=\"px-3 py-1 text-xs uppercase tracking-wide text-red-400\">Unread</div>`);
+            }
+            sections.push(ordered.map(notification => `
+                <div class=\"notification-item p-3 border-b border-[#363636] last:border-b-0 ${notification.is_read ? 'opacity-70' : ''}\">
+                    <div class=\"flex items-start justify-between\">
+                        <div class=\"flex-1\">
+                            <p class=\"text-sm ${notification.is_read ? 'text-gray-300' : 'text-white font-semibold'}\">${notification.message}</p>
+                            <div class=\"mt-1 flex items-center gap-2\">
+                                <p class=\"text-xs text-gray-400\">${notification.created_at}</p>
+                                ${notification.priority ? `
+                                    <span class=\"text-[10px] px-2 py-0.5 rounded-full ${notification.priority==='High' ? 'bg-yellow-600 text-yellow-100' : (notification.priority==='Medium' ? 'bg-green-700 text-green-100' : 'bg-gray-600 text-gray-100')}\">${notification.priority}</span>
+                                ` : ''}
+                            </div>
+                        </div>
+                        <div class=\"flex items-center space-x-2\">
+                            ${!notification.is_read ? `
+                                <span class=\"inline-block h-2 w-2 rounded-full bg-red-400\"></span>
+                            ` : ''}
+                            <button class=\"text-xs text-blue-400 hover:text-blue-300\" onclick=\"window.location.href='{% url 'notifications_page' %}#n-' + ${notification.id}\">View</button>
+                            <button class=\"text-xs text-red-400 hover:text-red-300\" onclick=\"deleteNotification(${notification.id})\">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            `).join(''));
+
+            notificationList.innerHTML = sections.join('');
+        }
+
+        // Show list as floating toasts (like dashboard)
+        function showNotificationsAsToasts(items) {
+            if (!items || items.length === 0) {
+                showToastNotification('No notifications yet', new Date().toLocaleString());
+                return;
+            }
+            // Show latest up to 5
+            items.slice(0, 5).forEach(n => {
+                showToastNotification(n.message, n.created_at);
+            });
+        }
+
+        // Update notification badge
+        function updateBadge() {
+            if (!notificationBadge || !notificationButton) return;
+            if (unreadCount > 0) {
+                notificationBadge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                notificationBadge.classList.remove('hidden');
+                // subtle bell highlight
+                notificationButton.classList.add('ring-2','ring-red-500/40');
+            } else {
+                notificationBadge.classList.add('hidden');
+                notificationButton.classList.remove('ring-2','ring-red-500/40');
+            }
+        }
+
+        // Mark single notification as read
+        async function markNotificationAsRead(notificationId) {
+            try {
+                const response = await fetch(notifMarkReadUrl(notificationId), {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    }
+                });
+                if (response.ok) {
+                    const notification = notifications.find(n => n.id === notificationId);
+                    if (notification) {
+                        notification.is_read = true;
+                        unreadCount = Math.max(0, unreadCount - 1);
+                        updateNotificationDisplay();
+                        updateBadge();
+                    }
+                }
+            } catch (error) {
+                console.error('Error marking notification as read:', error);
+            }
+        }
+
+        // Mark all notifications as read
+        async function markAllNotificationsAsRead() {
+            try {
+                const response = await fetch(NOTIF_MARK_ALL_URL, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    }
+                });
+                if (response.ok) {
+                    notifications.forEach(n => n.is_read = true);
+                    unreadCount = 0;
+                    updateNotificationDisplay();
+                    updateBadge();
+                }
+            } catch (error) {
+                console.error('Error marking all notifications as read:', error);
+            }
+        }
+
+        async function deleteNotification(notificationId) {
+            try {
+                const response = await fetch("{% url 'delete_notification' 0 %}".replace('/0/','/' + notificationId + '/'), {
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': getCookie('csrftoken') }
+                });
+                if (response.ok) {
+                    notifications = notifications.filter(n => n.id !== notificationId);
+                    // If it was unread, decrement
+                    if (unreadCount > 0) { unreadCount = notifications.filter(n => !n.is_read).length; }
+                    updateNotificationDisplay();
+                    updateBadge();
+                }
+            } catch (e) {
+                console.error('Failed to delete notification', e);
+            }
+        }
+
+        async function clearAllNotifications() {
+            try {
+                const response = await fetch("{% url 'clear_notifications' %}", {
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': getCookie('csrftoken') }
+                });
+                if (response.ok) {
+                    notifications = [];
+                    unreadCount = 0;
+                    updateNotificationDisplay();
+                    updateBadge();
+                }
+            } catch (e) {
+                console.error('Failed to clear notifications', e);
+            }
+        }
+
+        // Get CSRF token from cookies
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Initialize notification system
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load initial notifications for badge
+            loadNotifications();
+            // Bind bell click to toast behavior
+            safeBindBellClick();
+            // Outside close support (kept for future dropdown)
+            bindOutsideClose();
+            
+            // Set up WebSocket connection for real-time updates
+            setupWebSocket();
+        });
+
+        // WebSocket setup for real-time notifications
+        function setupWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws/admin/notifications/`;
+            
+            const socket = new WebSocket(wsUrl);
+            
+            socket.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                // Add new notification to the list
+                const newNotification = {
+                    id: Date.now(),
+                    message: data.message,
+                    created_at: data.timestamp,
+                    is_read: false
+                };
+                notifications.unshift(newNotification);
+                unreadCount++;
+                updateNotificationDisplay();
+                updateBadge();
+                // Show toast
+                showToastNotification(data.message, data.timestamp);
+            };
+            
+            socket.onerror = function(error) {
+                console.error('WebSocket error:', error);
+            };
+        }
+
+        // Show toast notification (existing utility)
+        function showToastNotification(message, timestamp) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed top-20 right-6 bg-blue-600 text-white px-4 py-3 rounded-lg shadow-lg z-50 animate-fade-in-down max-w-sm';
+            toast.innerHTML = `
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <svg class="w-5 h-5 text-blue-200" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium">${message}</p>
+                        <p class="text-xs text-blue-200 mt-1">${timestamp}</p>
+                    </div>
+                    <button onclick="this.parentElement.remove()" class="ml-4 text-blue-200 hover:text-white">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'transition-opacity', 'duration-1000');
+                setTimeout(() => toast.remove(), 1000);
+            }, 5000);
+        }
+    </script>
+
+    <!-- Notification CSS animations -->
+    <style>
+        @keyframes fade-in-down {
+            0% { opacity: 0; transform: translateY(-10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-down {
+            animation: fade-in-down 0.4s ease-out;
+        }
+        
+        .notification-item {
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .notification-item:hover {
+            background-color: rgba(55, 65, 81, 0.5);
+        }
+    </style>
 </body>
 </html>

@@ -5,6 +5,8 @@
 {% block content %}
 <div class="min-h-screen ml-16 mt-12 p-8">
   {% load custom_filters %}
+
+  <!-- 📊 Stats Cards -->
   <div class="bg-gray-800 rounded-xl shadow-lg p-6 mb-8 min-h-[100px]">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       <div class="bg-gray-700 p-6 rounded-xl shadow-sm">
@@ -12,19 +14,16 @@
         <p class="text-3xl font-bold text-white">{{ total_tasks }}</p>
         <p class="text-xs text-green-600 mt-1">+1% Since last month</p>
       </div>
-
       <div class="bg-gray-700 p-6 rounded-xl shadow-sm">
         <h3 class="text-sm text-white font-semibold mb-1">In Progress</h3>
         <p class="text-3xl font-bold text-white">{{ in_progress }}</p>
         <p class="text-xs text-blue-600 mt-1">Active Ongoing task execution</p>
       </div>
-
       <div class="bg-gray-700 p-6 rounded-xl shadow-sm">
         <h3 class="text-sm text-white font-semibold mb-1">Pending Tasks</h3>
         <p class="text-3xl font-bold text-white">{{ pending }}</p>
         <p class="text-xs text-yellow-600 mt-1">Awaiting action</p>
       </div>
-
       <div class="bg-gray-700 p-6 rounded-xl shadow-sm">
         <h3 class="text-sm text-white font-semibold mb-1">Completion Rate</h3>
         <p class="text-3xl font-bold text-white">{{ completion_rate }}%</p>
@@ -32,8 +31,12 @@
       </div>
     </div>
   </div>
-  <div class="bg-gray-800 shadow-md rounded-lg p-6 text-white">
 
+  <!-- 🔔 Floating Notification Container -->
+  <div id="notification-container" class="fixed top-16 right-6 space-y-2 z-50"></div>
+
+  <!-- 📋 Task Table -->
+  <div class="bg-gray-800 shadow-md rounded-lg p-6 text-white">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
       <h2 class="text-2xl font-bold">Task List</h2>
 
@@ -45,7 +48,6 @@
             <i class="fas fa-search"></i>
           </span>
         </div>
-
         <a href="{% url 'add_task' %}"
           class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium inline-flex items-center">
           <i class="fas fa-plus mr-2"></i> Add New Task
@@ -76,8 +78,7 @@
             <td class="px-4 py-2">{{ task.pic }}</td>
             <td class="px-4 py-2">
               {% if task.document %}
-              <a href="{{ task.document.url }}" class="text-blue-400 hover:underline">{{ task.document.name|basename
-                }}</a>
+              <a href="{{ task.document.url }}" class="text-blue-400 hover:underline">{{ task.document.name|basename }}</a>
               {% else %}
               <span class="text-gray-400 italic">No file</span>
               {% endif %}
@@ -121,9 +122,61 @@
           {% endfor %}
         </tbody>
       </table>
-
     </div>
 
+    <!-- 🔌 WebSocket + Flash Messages -->
+    <script>
+      // Django URL helpers (same names as base.html to keep consistent)
+      const NOTIF_LIST_URL = "{% url 'admin_notifications' %}";
+      function getMarkReadUrl(id) { return "{% url 'mark_notification_read' 0 %}".replace('/0/','/' + id + '/'); }
+
+      // 🔌 WebSocket + Flash Messages
+      const socket = new WebSocket(
+        (window.location.protocol === "https:" ? "wss://" : "ws://") +
+        window.location.host +
+        "/ws/admin/notifications/"
+      );
+
+      socket.onmessage = function (e) {
+        const data = JSON.parse(e.data);
+        console.log("🔔 Notification received:", data);
+        showNotification(data.message, data.timestamp, "blue");
+      };
+
+      function showNotification(message, timestamp, color = "blue") {
+        const container = document.getElementById("notification-container");
+
+        const div = document.createElement("div");
+        div.className = `bg-${color}-600 text-white px-4 py-3 rounded-lg shadow-lg animate-fade-in-down`;
+        div.innerHTML = `<strong>${timestamp}</strong><br>${message}`;
+
+        container.appendChild(div);
+
+        // Auto-remove after 5s
+        setTimeout(() => {
+          div.classList.add("opacity-0", "transition-opacity", "duration-1000");
+          setTimeout(() => div.remove(), 1000);
+        }, 5000);
+      }
+
+      // 🌱 Render Django flash messages as floating toasts
+      {% if messages %}
+        {% for message in messages %}
+          showNotification("{{ message|escapejs }}", "{{ now|date:'d M Y H:i' }}", "green");
+        {% endfor %}
+      {% endif %}
+    </script>
+
+    <!-- Small CSS animation -->
+    <style>
+      @keyframes fade-in-down {
+        0% { opacity: 0; transform: translateY(-10px); }
+        100% { opacity: 1; transform: translateY(0); }
+      }
+      .animate-fade-in-down {
+        animation: fade-in-down 0.4s ease-out;
+      }
+    </style>
   </div>
 </div>
 {% endblock %}

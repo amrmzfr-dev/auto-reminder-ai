@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+
+{% block title %}Task Detail - AutoReminder{% endblock %}
+
+{% block content %}
+<div class="min-h-screen ml-16 mt-12 p-8 text-white">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-2xl font-bold">Task Details</h1>
+            <div class="space-x-3">
+                <a href="{% url 'edit_task' task.pk %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm">
+                    Edit Task
+                </a>
+                <a href="{% url 'admin_dashboard' %}" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded text-sm">
+                    ← Back to Dashboard
+                </a>
+            </div>
+        </div>
+
+        <!-- Task Information -->
+        <div class="bg-gray-800 rounded-xl shadow-lg p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Left Column -->
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-sm text-gray-400 font-medium">Task Title</label>
+                        <p class="text-lg font-semibold text-white">{{ task.title }}</p>
+                    </div>
+                    
+                    <div>
+                        <label class="text-sm text-gray-400 font-medium">Person in Charge</label>
+                        <p class="text-white">{{ task.pic }}</p>
+                    </div>
+                    
+                    <div>
+                        <label class="text-sm text-gray-400 font-medium">Priority</label>
+                        <span class="inline-block px-3 py-1 rounded-full text-sm font-semibold
+                            {% if task.priority == 'High' %}bg-red-600 text-red-100
+                            {% elif task.priority == 'Medium' %}bg-yellow-600 text-yellow-100
+                            {% else %}bg-green-600 text-green-100{% endif %}">
+                            {{ task.priority }}
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Right Column -->
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-sm text-gray-400 font-medium">Status</label>
+                        <span class="inline-block px-3 py-1 rounded-full text-sm font-semibold
+                            {% if task.status == 'Pending' %}bg-yellow-600 text-yellow-100
+                            {% elif task.status == 'In Progress' %}bg-blue-600 text-blue-100
+                            {% else %}bg-green-600 text-green-100{% endif %}">
+                            {{ task.status }}
+                        </span>
+                    </div>
+                    
+                    <div>
+                        <label class="text-sm text-gray-400 font-medium">Created At</label>
+                        <p class="text-white">{{ task.created_at|date:"M d, Y P" }}</p>
+                    </div>
+                    
+                    {% if task.document %}
+                    <div>
+                        <label class="text-sm text-gray-400 font-medium">Document</label>
+                        <a href="{{ task.document.url }}" class="text-blue-400 hover:text-blue-300 underline">
+                            {{ task.document.name|slice:"12:" }}
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Remarks Section -->
+            {% if task.remarks %}
+            <div class="mt-6 pt-6 border-t border-gray-700">
+                <label class="text-sm text-gray-400 font-medium">Remarks</label>
+                <p class="text-white mt-2">{{ task.remarks }}</p>
+            </div>
+            {% endif %}
+            
+            <!-- Action Buttons -->
+            <div class="mt-8 pt-6 border-t border-gray-700">
+                <div class="flex space-x-4">
+                    {% if task.status == 'Pending' %}
+                    <button onclick="updateTaskStatus('{{ task.pk }}', 'In Progress')" 
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm">
+                        Start Task
+                    </button>
+                    {% elif task.status == 'In Progress' %}
+                    <button onclick="updateTaskStatus('{{ task.pk }}', 'Completed')" 
+                            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm">
+                        Mark Complete
+                    </button>
+                    {% endif %}
+                    
+                    <button onclick="deleteTask('{{ task.pk }}')" 
+                            class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm">
+                        Delete Task
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Handle highlight parameter from URL (when coming from notification)
+function handleNotificationHighlight() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const highlight = urlParams.get('highlight');
+    
+    if (highlight && highlight.startsWith('notification-')) {
+        // Add a visual indicator that this task was highlighted from a notification
+        const headerArea = document.querySelector('.max-w-4xl');
+        if (headerArea) {
+            // Create notification highlight banner
+            const banner = document.createElement('div');
+            banner.className = 'mb-6 p-4 bg-blue-600 text-white rounded-lg shadow-md border border-blue-500';
+            banner.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="font-medium">This task was highlighted from a notification</span>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" class="text-blue-200 hover:text-white">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                </div>
+            `;
+            
+            // Insert banner at the top
+            headerArea.insertBefore(banner, headerArea.firstChild);
+            
+            // Add a subtle animation to the entire task detail area
+            const mainContent = document.querySelector('.bg-gray-800');
+            if (mainContent) {
+                mainContent.classList.add('ring-2', 'ring-blue-500', 'ring-opacity-50');
+                setTimeout(() => {
+                    mainContent.classList.remove('ring-2', 'ring-blue-500', 'ring-opacity-50');
+                }, 3000);
+            }
+            
+            // Scroll to top to show the banner
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        // Clean up URL parameter after showing the highlight
+        const newUrl = new URL(window.location);
+        newUrl.searchParams.delete('highlight');
+        window.history.replaceState({}, document.title, newUrl.pathname);
+    }
+}
+
+// Task status update function
+function updateTaskStatus(taskId, newStatus) {
+    if (confirm(`Are you sure you want to mark this task as "${newStatus}"?`)) {
+        // You can implement AJAX call here to update the task status
+        // For now, we'll just show a message
+        alert(`Task status updated to "${newStatus}"!`);
+        // Reload the page to show updated status
+        location.reload();
+    }
+}
+
+// Delete task function
+function deleteTask(taskId) {
+    if (confirm('Are you sure you want to delete this task? This action cannot be undone.')) {
+        // Redirect to delete URL
+        window.location.href = `/auth/task/delete/${taskId}/`;
+    }
+}
+
+// Run when page loads
+document.addEventListener('DOMContentLoaded', handleNotificationHighlight);
+</script>
+{% endblock %}

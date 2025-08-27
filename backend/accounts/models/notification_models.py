@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.models import User # Assuming Django's built-in User model
 from ..models import Installation # Assuming your Installation model is in an 'installations' app
 from ..models import CustomUser
+from .admin_models import Task
 
 class Notification(models.Model):
     """
@@ -29,6 +30,27 @@ class Notification(models.Model):
         blank=True,
         related_name='notifications',
         help_text="An optional link to the relevant installation, allowing clicks to navigate directly to the job details."
+    )
+    related_task = models.ForeignKey(
+        Task,
+        on_delete=models.SET_NULL, # If a task is deleted, don't delete the notification
+        null=True,
+        blank=True,
+        related_name='notifications',
+        help_text="An optional link to the relevant task, allowing clicks to navigate directly to the task details."
+    )
+    # Optional priority display for task-related notifications
+    PRIORITY_CHOICES = [
+        ('High', 'High'),
+        ('Medium', 'Medium'),
+        ('Low', 'Low'),
+    ]
+    priority = models.CharField(
+        max_length=10,
+        choices=PRIORITY_CHOICES,
+        null=True,
+        blank=True,
+        help_text="Optional priority for the related task (High/Medium/Low)."
     )
     created_at = models.DateTimeField(
         auto_now_add=True,
@@ -58,13 +80,11 @@ class Notification(models.Model):
 
     def get_related_url(self):
         """
-        Returns a URL for the related installation, if any.
-        This would typically link to a detail view for the installation.
-        You'll need to define this URL pattern in your Django `urls.py`.
+        Returns a URL for the related installation or task, if any.
+        This allows clicks to navigate directly to the relevant details.
         """
         if self.related_installation:
-            # Example: Replace 'installation-detail' with your actual URL name
-            # from django.urls import reverse
-            # return reverse('installation-detail', args=[self.related_installation.pk])
-            return f"/installations/{self.related_installation.pk}/"
-        return "#" # Return a generic link if no related installation
+            return f"/auth/{self.related_installation.installation_id}/"
+        elif self.related_task:
+            return f"/auth/task/{self.related_task.pk}/"
+        return "#" # Return a generic link if no related item
