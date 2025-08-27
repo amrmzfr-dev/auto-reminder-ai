@@ -24,6 +24,7 @@ urlpatterns = [
     path('task/<int:pk>/', views.task_detail, name='task_detail'),
     path('task/edit/<int:pk>/', views.edit_task, name='edit_task'),
     path('task/delete/<int:pk>/', views.delete_task, name='delete_task'),
+    path('task/<int:task_id>/update-status/', views.update_task_status_view, name='update_task_status'),
 
     # TEST
     path('upload/', views.upload_file, name='upload_file'),

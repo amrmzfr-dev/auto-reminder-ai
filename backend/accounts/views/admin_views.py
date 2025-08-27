@@ -325,3 +325,58 @@ def clear_notifications_view(request):
         Notification.objects.filter(user=request.user).delete()
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'error', 'message': 'Invalid method'}, status=405)
+
+
+# -----------------------------------------------
+# 🔄 Task Status Update View
+# -----------------------------------------------
+@csrf_exempt
+@role_required('1')
+def update_task_status_view(request, task_id):
+    """Update task status via AJAX"""
+    if request.method == 'POST':
+        try:
+            task = get_object_or_404(Task, pk=task_id)
+            new_status = request.POST.get('status')
+            
+            if new_status in ['Pending', 'In Progress', 'Completed']:
+                old_status = task.status
+                task.status = new_status
+                task.save()
+                
+                # Create notification about status change
+                admin_users = User.objects.filter(role='1')
+                for admin_user in admin_users:
+                    Notification.objects.create(
+                        user=admin_user,
+                        message=f"🔄 Task '{task.title}' status changed from {old_status} to {new_status}",
+                        priority='Medium',
+                        related_task=task
+                    )
+                
+                return JsonResponse({
+                    'status': 'success',
+                    'message': f'Task status updated to {new_status}',
+                    'new_status': new_status
+                })
+            else:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Invalid status value'
+                }, status=400)
+                
+        except Task.DoesNotExist:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Task not found'
+            }, status=404)
+        except Exception as e:
+            return JsonResponse({
+                'status': 'error',
+                'message': str(e)
+            }, status=500)
+    
+    return JsonResponse({
+        'status': 'error',
+        'message': 'Invalid method'
+    }, status=405)
