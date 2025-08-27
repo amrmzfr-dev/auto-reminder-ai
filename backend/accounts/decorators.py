@@ -27,3 +27,4 @@ def role_required(required_role):
             return HttpResponseForbidden("❌ Access Denied")
         return _wrapped_view
     return decorator
+

@@ -81,3 +81,4 @@ class InstallationService:
             'completed': completed,
             'completion_rate': completion_rate,
         }
+
